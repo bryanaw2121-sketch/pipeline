@@ -1,0 +1,142 @@
+name: Cortar do Drive
+
+# Roda o corte INTEIRO na nuvem, com a voz clonada. A maquina do Bryan e'
+# limitada e nao instala torch/chatterbox (o spacy-pkuseg nao compila no
+# Python 3.14 dela); aqui o runner e' 3.12, onde as rodas existem.
+#
+# A amostra de voz NAO vive neste repositorio: ele e' publico. Ela mora num
+# repo PRIVADO e o runner baixa com VOZ_TOKEN, so' durante a execucao.
+
+on:
+  workflow_dispatch:
+    inputs:
+      arquivo_id:
+        description: "ID do arquivo no Drive (pasta 1 BRUTOS)"
+        required: true
+      qtd:
+        description: "Quantos cortes"
+        required: false
+        default: "2"
+      idioma:
+        description: "Idioma da fala na fonte (en, it, fr, ja)"
+        required: false
+        default: "en"
+
+jobs:
+  cortar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run: pip install -r requirements.txt
+
+      
+      - name: Baixar o bruto do Drive
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          pip install google-api-python-client google-auth
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > sa.json
+          python -c "
+          import io, os
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaIoBaseDownload
+          cred = service_account.Credentials.from_service_account_file('sa.json', scopes=['https://www.googleapis.com/auth/drive'])
+          sv = build('drive','v3',credentials=cred)
+          req = sv.files().get_media(fileId='${{ inputs.arquivo_id }}')
+          with io.FileIO('fonte.mp4','wb') as fh:
+              d = MediaIoBaseDownload(fh, req, chunksize=8*1024*1024)
+              done = False
+              while not done:
+                  st, done = d.next_chunk()
+                  print('  %d%%' % int(st.progress()*100), flush=True)
+          "
+          rm -f sa.json
+          ls -la fonte.mp4
+
+      - name: Instalar voz clonada (Chatterbox)
+        id: voz
+        continue-on-error: true
+        run: pip install chatterbox-tts perth torchaudio
+
+      - name: Baixar a amostra de voz do repo privado
+        if: steps.voz.outcome == 'success'
+        env:
+          VOZ_TOKEN: ${{ secrets.VOZ_TOKEN }}
+        run: |
+          mkdir -p vozes
+          curl -sfL -H "Authorization: Bearer $VOZ_TOKEN" \
+            -H "Accept: application/vnd.github.raw" \
+            -o vozes/bryan_amostra.wav \
+            https://api.github.com/repos/${{ github.repository_owner }}/voz/contents/amostra.wav
+          ls -la vozes/
+
+      - name: Desligar voz clonada se ela nao instalou
+        if: steps.voz.outcome != 'success'
+        run: |
+          echo "::warning::chatterbox nao instalou — saindo com edge-tts (voz PROVISORIA)"
+      # O chatterbox rebaixa o numpy pra 1.26 e o opencv 5 exige >=2. Descobrir
+      # isso na hora do render jogaria fora o Gemini e o Groq ja gastos.
+      - name: Conferir que o motor importa (falha barata antes de gastar API)
+        run: |
+          python -c "import numpy; print('numpy', numpy.__version__)"
+          python -c "import cv2; print('cv2', cv2.__version__)"
+          python -c "import mediapipe, PIL, num2words; print('render ok')"
+
+      - name: Cortar
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+          GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
+          GEMINI_API_KEY_5: ${{ secrets.GEMINI_API_KEY_5 }}
+          GEMINI_API_KEY_6: ${{ secrets.GEMINI_API_KEY_6 }}
+          GEMINI_API_KEY_7: ${{ secrets.GEMINI_API_KEY_7 }}
+          GEMINI_API_KEY_8: ${{ secrets.GEMINI_API_KEY_8 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
+          GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+          GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
+          GROQ_API_KEY_5: ${{ secrets.GROQ_API_KEY_5 }}
+          GROQ_API_KEY_6: ${{ secrets.GROQ_API_KEY_6 }}
+          GROQ_API_KEY_7: ${{ secrets.GROQ_API_KEY_7 }}
+          GROQ_API_KEY_8: ${{ secrets.GROQ_API_KEY_8 }}
+        run: >
+          python -X utf8 main.py
+          --arquivo fonte.mp4
+          --qtd "${{ inputs.qtd }}"
+          --idioma "${{ inputs.idioma }}"
+          --dublar --fala-literal
+
+      - name: Guardar os clipes
+        uses: actions/upload-artifact@v4
+        with:
+          name: cortes
+          path: saida/**
+          retention-days: 30
+
+      - name: Mandar pros rascunhos do Buffer
+        env:
+          BUFFER_TOKEN: ${{ secrets.BUFFER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_REPO: ${{ github.repository_owner }}/media-assets
+        run: |
+          find saida -name 'short_9x16.mp4' -print0 | while IFS= read -r -d '' v; do
+            python -X utf8 previa_buffer.py "$v" --titulo "$(basename "$(dirname "$v")")"
+          done
+
+      - name: Avisar no Telegram
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then T="Corte de receita pronto — ja esta nos rascunhos do Buffer."
+          else T="Corte de receita FALHOU: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; fi
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data-urlencode text="$T"
