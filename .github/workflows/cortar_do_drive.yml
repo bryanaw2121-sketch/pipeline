@@ -122,6 +122,20 @@ jobs:
           name: cortes
           path: saida/**
           retention-days: 30
+      # Sobe os cortes prontos pro Drive pro Bryan ver. O token e OAuth de
+      # conta real: a conta de servico NAO tem cota de armazenamento e
+      # recusa upload (storageQuotaExceeded, medido em 28/08).
+      - name: Subir os cortes pro Drive
+        if: always()
+        env:
+          DRIVE_TOKEN_JSON: ${{ secrets.DRIVE_TOKEN_JSON }}
+          DRIVE_PASTA: ${{ secrets.DRIVE_PASTA_CORTES }}
+        run: |
+          pip install google-api-python-client google-auth google-auth-oauthlib
+          printf %s "$DRIVE_TOKEN_JSON" > td.json
+          python subir_cortes_drive.py --token td.json --pasta "$DRIVE_PASTA"
+          rm -f td.json
+
 
       - name: Mandar pros rascunhos do Buffer
         env:
