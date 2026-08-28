@@ -1,0 +1,55 @@
+# REFAZER — fontes dos clipes de 29-07, para recortar com o motor novo
+# Gerado em 31/07/2026 a partir de estado/videos_trabalhados.json.
+#
+# Por que existe: os clipes de 29-07 foram cortados ANTES do titulo na
+# tela e da ancoragem no comeco da frase. Para refazer, o bruto precisa
+# existir — e a maioria ja foi apagada do Drive (a limpeza manda pra
+# lixeira apos o corte, e a lixeira foi esvaziada).
+#
+# Rode no NOTEBOOK: python processar_lista.py
+
+# 8 clipe(s) em 29-07 · A.I. Revolution   Full Documentary   NOVA   PBS
+https://www.youtube.com/watch?v=-sB12gk9ESA
+
+# 8 clipe(s) em 29-07 · Rise of the Humanoids  Inside China s Robot Awakening
+https://www.youtube.com/watch?v=7I-KWkV0JUM
+
+# 7 clipe(s) em 29-07 · The Rise Of Robots   CNBC Marathon
+https://www.youtube.com/watch?v=I1w6xzBN7mA
+
+# 7 clipe(s) em 29-07 · Boston Dynamics CEO explains how Atlas humanoid robot works   Robe
+https://www.youtube.com/watch?v=Jb0Z_Si3aqo
+
+# 7 clipe(s) em 29-07 · Our latest reports on robots   60 Minutes Full Episodes
+https://www.youtube.com/watch?v=s1ISnaUQgUE
+
+# 6 clipe(s) em 29-07 · MIT Explains the 12 Possible Endings for AI
+https://www.youtube.com/watch?v=FLcrvMfHUJM
+
+# 6 clipe(s) em 29-07 · The Humanoid Mission in Manufacturing   Boston Dynamics Tech Talk
+https://www.youtube.com/watch?v=SRZ9E48B6aM
+
+# 6 clipe(s) em 29-07 · How Boston Dynamics Is Building Its Robot Empire
+https://www.youtube.com/watch?v=SZRAGpo3wy0
+
+# 5 clipe(s) em 29-07 · Neuralink Update, Summer 2025
+https://www.youtube.com/watch?v=FASMejN_5gs
+
+# 5 clipe(s) em 29-07 · Form & Function of Enterprise Humanoid Design   Boston Dynamics Te
+https://www.youtube.com/watch?v=wL0-Pu_8F0U
+
+# 4 clipe(s) em 29-07 · Why Humanoids Are the Future of Manufacturing   Boston Dynamics We
+https://www.youtube.com/watch?v=laexcnaTrDM
+
+# 2 clipe(s) em 29-07 · Neuralink Overview, Fall 2025
+https://www.youtube.com/watch?v=QJdgHXyJh7M
+
+# 2 clipe(s) em 29-07 · TERAFAB   The Largest Chip Manufacturing Facility Ever
+https://www.youtube.com/watch?v=Txt3Wodav1o
+
+# 1 clipe(s) em 29-07 · World s #1 Brain Surgeon  The Truth About Protecting Your Brain Af
+https://www.youtube.com/watch?v=YlokzKnRqmg
+
+# --- os que renderam ZERO clipe: nao vale refazer sem investigar ---
+# Inside OpenAI's Stargate Megafactory with Sam Altman   The Circuit
+# https://www.youtube.com/watch?v=GhIJs4zbH0o

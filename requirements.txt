@@ -1,0 +1,26 @@
+# --- núcleo (obrigatório) ---
+requests>=2.32
+python-dotenv>=1.0
+yt-dlp>=2025.1.1
+# Mede a largura REAL do titulo na fonte, para ele nao estourar a borda do
+# video (render._largura_px). Sem Pillow o render ainda roda, mas cai numa
+# estimativa por caractere — que foi exatamente a causa do defeito de 01/08.
+Pillow>=10.0
+
+# Numero em digito por extenso antes do TTS: sem isso o motor de voz
+# chuta a leitura de ano e porcentagem (Bryan ouviu "2030" errado em
+# 22/08/2026). Ver engine/numeros.py — se faltar, o texto passa cru.
+num2words>=0.5.13
+
+# --- face tracking p/ crop 9:16 (roda em CPU, GPU opcional) ---
+mediapipe>=0.10.35
+opencv-python>=4.10
+
+# --- publicação no YouTube (publicar.py) ---
+google-api-python-client>=2.140
+google-auth-oauthlib>=1.2
+
+# --- SOMENTE se for rodar Whisper offline na 1650 (modo --local-whisper) ---
+# Instale à parte, não vem por padrão:
+#   pip install faster-whisper
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124

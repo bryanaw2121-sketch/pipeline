@@ -1,0 +1,48 @@
+.env*
+!.env.sample
+client_secrets.json
+client_secret*.json
+token*.json
+token*.json.bak
+.estado_publicacao.json
+*.pkl
+trabalho/
+saida/
+lista_videos.txt
+PARA_POSTAR/
+estado/*
+# exceção: mestre de vídeos-fonte já baixados/cortados — precisa sobreviver
+# a troca de máquina (já aconteceu uma vez com este projeto), então vai pro
+# git em vez de ficar só local como o resto de estado/
+!estado/videos_trabalhados.json
+teste/*.mp4
+teste/*.mp3
+teste/*.log
+teste/comparacao_modelos.json
+*.log
+painel_err.log
+painel_out.log
+__pycache__/
+
+# OAuth client secret (installed) — NAO pode ir pro repo
+credentials.json
+
+# temporarios e material pesado de teste
+tmpfreeze/
+teste_elon.mp4
+modelos/
+github_token.txt
+
+# amostra biométrica da voz do Bryan (voz clonada) — nunca vai pro repo,
+# nem público nem privado. Local-only, igual credentials/tokens.
+vozes/
+buffer_token.txt
+estado/buffer_cota.json
+
+# Projeto Cozinha Importada: segredos NUNCA vao pro git (este repo e publico)
+cozinha/segredos/*
+!cozinha/segredos/SEGREDOS.exemplo.md
+
+# Projeto Cozinha Importada mora FORA deste repo, a pedido do Bryan (28/08):
+# C:/Users/Administrator/Desktop/Tiktok/Cozinha Importada/
+cozinha/

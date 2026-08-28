@@ -1,0 +1,53 @@
+name: YouTube palito - gerar narracao completa (voz clonada)
+
+on:
+  workflow_dispatch:
+    inputs:
+      roteiro_arquivo:
+        description: "Caminho do JSON de cenas no repo"
+        required: false
+        default: "roteiro_locus_teste.json"
+
+jobs:
+  narrar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run: pip install google-api-python-client google-auth google-auth-oauthlib requests
+
+      - name: Baixar amostra de voz do Drive (nao fica no repo)
+        env:
+          GOOGLE_OAUTH_TOKEN_JSON_2: ${{ secrets.GOOGLE_OAUTH_TOKEN_JSON_2 }}
+        run: |
+          mkdir -p vozes
+          python -X utf8 baixar_bruto_drive.py --file-id "1vGJd2pa-ogzV1Z3vmVR926k72auLbmI-" --destino "vozes/bryan_amostra.m4a" --conta "reserva"
+          ffmpeg -y -i vozes/bryan_amostra.m4a -ar 24000 -ac 1 vozes/bryan_amostra.wav
+
+      - name: Instalar chatterbox-tts
+        run: |
+          pip install --upgrade "setuptools>=70"
+          pip install chatterbox-tts
+          pip install --force-reinstall --no-deps resemble-perth
+
+      - name: Gerar narracao completa do roteiro
+        run: |
+          python -X utf8 gerar_narracao_padrao.py \
+            --roteiro "${{ inputs.roteiro_arquivo }}" \
+            --amostra-voz vozes/bryan_amostra.wav \
+            --saida saida_narracao
+
+      - name: Upload da narracao
+        uses: actions/upload-artifact@v4
+        with:
+          name: narracao-youtube-palito
+          path: |
+            saida_narracao/narracao_final.wav
+            saida_narracao/timing.json

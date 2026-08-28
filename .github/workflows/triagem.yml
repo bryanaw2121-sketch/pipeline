@@ -1,0 +1,45 @@
+name: Pré-triagem de cortabilidade
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Link do vídeo a avaliar"
+        required: true
+      titulo:
+        description: "Título (só pra identificar no log)"
+        required: false
+        default: "(avulso)"
+
+jobs:
+  triar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Triar
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_API_KEY_2: ${{ secrets.NVIDIA_API_KEY2 }}
+        run: >
+          python -X utf8 triar_cortabilidade.py
+          --url "${{ inputs.url }}"
+          --titulo "${{ inputs.titulo }}"
+
+      - name: Avisar resultado no Telegram
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            TEXTO="🔎 Triagem terminou: ${{ inputs.titulo }} — veja o resultado no log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          else
+            TEXTO="⚠️ Triagem falhou: ${{ inputs.titulo }} — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode text="$TEXTO"

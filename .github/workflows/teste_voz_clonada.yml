@@ -1,0 +1,87 @@
+name: Teste - clonagem de voz (Chatterbox, so medicao de tempo)
+
+on:
+  workflow_dispatch:
+    inputs:
+      texto:
+        description: "Texto pra sintetizar na voz clonada"
+        required: false
+        default: "Isso esta acontecendo agora. A tecnologia esta avancando muito rapido, e ninguem sabe exatamente pra onde isso vai."
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run: pip install google-api-python-client google-auth google-auth-oauthlib
+
+      - name: Baixar amostra de voz do Drive (nao fica no repo)
+        env:
+          GOOGLE_OAUTH_TOKEN_JSON_2: ${{ secrets.GOOGLE_OAUTH_TOKEN_JSON_2 }}
+        run: |
+          mkdir -p vozes
+          python -X utf8 baixar_bruto_drive.py --file-id "1vGJd2pa-ogzV1Z3vmVR926k72auLbmI-" --destino "vozes/bryan_amostra.m4a" --conta "reserva"
+
+      - name: Converter amostra de voz pra wav
+        run: mkdir -p vozes && ffmpeg -y -i vozes/bryan_amostra.m4a -ar 24000 -ac 1 vozes/bryan_amostra.wav
+
+      - name: Instalar chatterbox-tts (medindo tempo)
+        run: |
+          echo "inicio_install=$(date +%s)" >> "$GITHUB_ENV"
+          pip install --upgrade "setuptools>=70"
+          pip install chatterbox-tts
+          pip install --force-reinstall --no-deps resemble-perth
+          echo "fim_install=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Gerar audios clonados - pt-BR e inglês (medindo tempo)
+        env:
+          TEXTO_PT: ${{ inputs.texto }}
+        run: |
+          echo "inicio_carregar=$(date +%s)" >> "$GITHUB_ENV"
+          python -X utf8 -c "
+          import os, time, torchaudio as ta
+          import perth
+          class _SemMarcaDagua:
+              def __init__(self, *a, **k): pass
+              def apply_watermark(self, wav, sample_rate=None): return wav
+          perth.PerthImplicitWatermarker = _SemMarcaDagua
+          from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+
+          t0 = time.time()
+          model = ChatterboxMultilingualTTS.from_pretrained(device='cpu')
+          t1 = time.time()
+          print(f'CARREGAR_MODELO_S={t1-t0:.1f}')
+
+          wav = model.generate(os.environ['TEXTO_PT'], audio_prompt_path='vozes/bryan_amostra.wav', language_id='pt')
+          ta.save('vozes/teste_saida_pt.wav', wav, model.sr)
+          t2 = time.time()
+          print(f'GERAR_PT_S={t2-t1:.1f}')
+
+          wav = model.generate('Every piece of fruit is a drop of sweetness from nature', audio_prompt_path='vozes/bryan_amostra.wav', language_id='en')
+          ta.save('vozes/teste_saida_en.wav', wav, model.sr)
+          t3 = time.time()
+          print(f'GERAR_EN_S={t3-t2:.1f}')
+          "
+          echo "fim_gerar=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Relatorio de tempo
+        run: |
+          echo "Instalar dependencias: $((fim_install - inicio_install))s"
+          echo "Gerar audio pt-BR:     $((fim_gerar_pt - inicio_gerar_pt))s"
+          echo "Gerar audio inglês:    $((fim_gerar_en - inicio_gerar_en))s"
+
+      - name: Upload dos audios gerados
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-clonado-teste
+          path: |
+            vozes/teste_saida_pt.wav
+            vozes/teste_saida_en.wav

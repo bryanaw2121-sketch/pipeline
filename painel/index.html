@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Flux YouTube — painel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #0b0f14; --card: #121820; --border: #232b36;
+    --text: #e6edf3; --text-dim: #8b96a5;
+    --accent: #4f9dff; --ok: #3fb950; --erro: #f85149; --pendente: #6e7681;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", sans-serif; padding: 24px;
+  }
+  h1 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 24px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin-bottom: 20px;
+  }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--text-dim); margin: 0 0 16px; font-weight: 600; }
+
+  /* stepper de progresso */
+  .steps { display: flex; flex-wrap: wrap; gap: 6px; }
+  .step {
+    flex: 1; min-width: 90px; text-align: center; padding: 10px 6px;
+    border-radius: 8px; border: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim); transition: all .2s;
+  }
+  .step.ativo { border-color: var(--accent); color: var(--accent);
+    background: rgba(79,157,255,.08); font-weight: 600; }
+  .step.feito { color: var(--ok); }
+
+  .detalhe { margin-top: 16px; font-size: 13px; color: var(--text-dim); }
+  .detalhe b { color: var(--text); }
+  .ocioso-msg { color: var(--text-dim); font-size: 13px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--text-dim); font-weight: 500;
+    font-size: 11px; text-transform: uppercase; padding: 6px 10px; }
+  td { padding: 10px; border-top: 1px solid var(--border); }
+  .titulo-cel { max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; }
+  .pill.pendente { background: rgba(110,118,129,.15); color: var(--pendente); }
+  .pill.processando { background: rgba(79,157,255,.15); color: var(--accent); }
+  .pill.concluido { background: rgba(63,185,80,.15); color: var(--ok); }
+  .pill.publicado { background: rgba(63,185,80,.25); color: var(--ok); }
+  .pill.erro { background: rgba(248,81,73,.15); color: var(--erro); }
+
+  .barra { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; margin: 12px 0 4px; }
+  .barra-fill { height: 100%; background: var(--accent); transition: width .3s; }
+  .pct { font-size: 12px; color: var(--text-dim); text-align: right; }
+
+  .vazio { color: var(--text-dim); font-size: 13px; padding: 12px 0; }
+  .pill.conectado { background: rgba(63,185,80,.15); color: var(--ok); }
+  .pill.desconectado { background: rgba(110,118,129,.15); color: var(--pendente); }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%;
+    background: var(--ok); margin-right: 6px; animation: pulso 1.4s infinite; }
+  @keyframes pulso { 0%,100%{opacity:1} 50%{opacity:.3} }
+</style>
+</head>
+<body>
+  <h1>Flux YouTube — painel</h1>
+  <div class="sub" id="rodape">carregando...</div>
+
+  <div class="card">
+    <h2>Processamento atual</h2>
+    <div id="steps" class="steps"></div>
+    <div class="barra"><div class="barra-fill" id="barraFill" style="width:0%"></div></div>
+    <div class="pct" id="pct"></div>
+    <div id="detalhe" class="detalhe"></div>
+  </div>
+
+  <div class="card">
+    <h2>Fila de vídeos</h2>
+    <div id="fila"></div>
+  </div>
+
+  <div class="card">
+    <h2>Histórico (todos os vídeos já processados)</h2>
+    <div id="historico"></div>
+  </div>
+
+  <div class="card">
+    <h2>Contas conectadas</h2>
+    <div class="sub" style="margin-bottom:12px">Chaves configuradas no .env, com limite/preço de referência — não é o gasto real (isso só no painel de cada provedor).</div>
+    <div id="contas"></div>
+  </div>
+
+<script>
+const ETAPAS = [
+  ["baixando", "Baixando"],
+  ["extraindo_audio", "Extraindo áudio"],
+  ["gemini_selecionando", "Gemini escolhendo"],
+  ["cortando", "Cortando clipe"],
+  ["transcrevendo", "Transcrevendo (Groq)"],
+  ["traduzindo", "Traduzindo"],
+  ["dublando", "Dublando"],
+  ["renderizando_vertical", "Render 9:16"],
+  ["renderizando_horizontal", "Render 16:9"],
+];
+
+const NOMES_STATUS = {
+  pendente: "pendente", processando: "processando",
+  concluido: "concluído", erro: "erro", publicado: "publicado",
+};
+
+function horaCurta(ts) {
+  if (!ts) return "—";
+  const d = new Date(ts * 1000);
+  return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function tempoRelativo(ts) {
+  if (!ts) return "";
+  const s = Math.max(0, (Date.now()/1000) - ts);
+  if (s < 5) return "agora";
+  if (s < 60) return `há ${Math.floor(s)}s`;
+  return `há ${Math.floor(s/60)}min`;
+}
+
+function renderSteps(st) {
+  const idxAtual = ETAPAS.findIndex(([k]) => k === st.passo);
+  const el = document.getElementById("steps");
+  el.innerHTML = "";
+  ETAPAS.forEach(([chave, rotulo], i) => {
+    const div = document.createElement("div");
+    div.className = "step" + (chave === st.passo ? " ativo" : (idxAtual >= 0 && i < idxAtual ? " feito" : ""));
+    div.textContent = rotulo;
+    el.appendChild(div);
+  });
+
+  // percentual aproximado: etapa atual dentro da sequência, combinado com
+  // o progresso de clipe/total_clipes (não é o % real do ffmpeg, é uma
+  // estimativa de "quanto do trabalho todo já passou")
+  let pct = 0;
+  if (idxAtual >= 0) {
+    const fracClipe = (st.total_clipes && st.clipe) ? (st.clipe - 1) / st.total_clipes : 0;
+    pct = Math.round(((idxAtual + fracClipe) / ETAPAS.length) * 100);
+  } else if (st.passo && st.passo !== "ocioso") {
+    pct = 100;
+  }
+  document.getElementById("barraFill").style.width = pct + "%";
+  document.getElementById("pct").textContent = (st.passo && st.passo !== "ocioso") ? pct + "%" : "";
+
+  const det = document.getElementById("detalhe");
+  if (st.passo === "ocioso" || !st.passo) {
+    det.innerHTML = '<span class="ocioso-msg">Nada rodando no momento.</span>';
+  } else {
+    let linha = `<span class="dot"></span><b>${st.fonte || ""}</b>`;
+    if (st.clipe) linha += ` — clipe ${st.clipe}/${st.total_clipes}`;
+    if (st.detalhe) linha += `: ${st.detalhe}`;
+    det.innerHTML = linha;
+  }
+}
+
+function renderFila(itens) {
+  const el = document.getElementById("fila");
+  if (!itens.length) {
+    el.innerHTML = '<div class="vazio">Fila vazia. Rode <code>python descobrir.py</code> pra popular.</div>';
+    return;
+  }
+  let html = "<table><thead><tr><th>Status</th><th>Título</th><th>Canal</th><th>Nota</th>" +
+             "<th>Origem</th><th>Início</th><th>Fim</th></tr></thead><tbody>";
+  for (const v of itens) {
+    html += `<tr>
+      <td><span class="pill ${v.status}">${NOMES_STATUS[v.status] || v.status}</span></td>
+      <td class="titulo-cel" title="${v.titulo || ""}">${v.titulo || ""}</td>
+      <td>${v.canal || ""}</td>
+      <td>${v.nota ?? ""}</td>
+      <td>${v.origem || ""}</td>
+      <td>${horaCurta(v.iniciado_em)}</td>
+      <td>${horaCurta(v.concluido_em)}</td>
+    </tr>`;
+  }
+  html += "</tbody></table>";
+  el.innerHTML = html;
+}
+
+function renderHistorico(itens) {
+  const el = document.getElementById("historico");
+  if (!itens.length) {
+    el.innerHTML = '<div class="vazio">Nenhum vídeo processado ainda.</div>';
+    return;
+  }
+  let html = "<table><thead><tr><th>Status</th><th>Título</th><th>Início</th>" +
+             "<th>Fim</th><th>Publicado</th></tr></thead><tbody>";
+  for (const v of itens) {
+    html += `<tr>
+      <td><span class="pill ${v.status}">${NOMES_STATUS[v.status] || v.status || ""}</span></td>
+      <td class="titulo-cel" title="${v.titulo || ""}">${v.titulo || v.url || ""}</td>
+      <td>${horaCurta(v.iniciado_em)}</td>
+      <td>${horaCurta(v.concluido_em)}</td>
+      <td>${horaCurta(v.publicado_em)}</td>
+    </tr>`;
+  }
+  html += "</tbody></table>";
+  el.innerHTML = html;
+}
+
+function renderContas(contas) {
+  const el = document.getElementById("contas");
+  if (!contas || !contas.length) {
+    el.innerHTML = '<div class="vazio">Sem dados — abra o painel de novo (painel_servidor.py lê o .env só na subida).</div>';
+    return;
+  }
+  let html = "<table><thead><tr><th>Status</th><th>Provedor</th><th>Chaves</th><th>Uso no motor</th><th>Limite/preço (referência)</th></tr></thead><tbody>";
+  for (const c of contas) {
+    html += `<tr>
+      <td><span class="pill ${c.conectado ? 'conectado' : 'desconectado'}">${c.conectado ? 'conectado' : 'sem chave'}</span></td>
+      <td>${c.nome}</td>
+      <td>${c.chaves_configuradas}</td>
+      <td>${c.uso}</td>
+      <td>${c.limite_referencia}</td>
+    </tr>`;
+  }
+  html += "</tbody></table>";
+  el.innerHTML = html;
+}
+
+async function atualizar() {
+  try {
+    const [st, fila, historico, contas] = await Promise.all([
+      fetch("/estado/status.json").then(r => r.ok ? r.json() : {passo: "ocioso"}).catch(() => ({passo: "ocioso"})),
+      fetch("/estado/fila_atual.json").then(r => r.ok ? r.json() : {itens: []}).catch(() => ({itens: []})),
+      fetch("/estado/historico.json").then(r => r.ok ? r.json() : {}).catch(() => ({})),
+      fetch("/estado/contas.json").then(r => r.ok ? r.json() : {contas: []}).catch(() => ({contas: []})),
+    ]);
+    renderSteps(st);
+    renderFila(fila.itens || []);
+    renderHistorico(Object.values(historico).sort((a, b) => (b.iniciado_em || 0) - (a.iniciado_em || 0)));
+    renderContas(contas.contas || []);
+    document.getElementById("rodape").textContent =
+      "atualizado " + tempoRelativo(st.atualizado_em || Date.now()/1000);
+  } catch (e) {
+    document.getElementById("rodape").textContent = "sem conexão com o servidor local";
+  }
+}
+
+atualizar();
+setInterval(atualizar, 1500);
+</script>
+</body>
+</html>

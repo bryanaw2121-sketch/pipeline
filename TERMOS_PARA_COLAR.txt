@@ -1,0 +1,81 @@
+Flux Clips — Terms of Service and Privacy Policy
+
+Effective date: 26 July 2026
+
+
+ABOUT THIS APPLICATION
+
+Flux Clips is a personal, single-user desktop tool. It selects highlight
+segments from long-form video, renders them as short vertical clips with
+burned-in captions, and publishes the finished files to the operator's own
+TikTok account using TikTok's Content Posting API.
+
+There is exactly one operator: the person who built and runs it on their own
+computer. The tool does not accept sign-ups, does not act on behalf of other
+users, and does not store or share TikTok account data with any third party.
+
+
+TERMS OF SERVICE
+
+1. Scope
+
+These terms cover the Flux Clips application ("the app") as connected to
+TikTok through the TikTok for Developers platform. The app is operated by a
+single individual for personal content publishing and is not offered as a
+service to the public.
+
+2. What the app is permitted to do
+
+- Read basic profile information for the authorizing account (user.info.basic).
+- Upload and publish video files to the authorizing account (video.upload,
+  video.publish).
+
+3. What the app will not do
+
+- Post content the operator has not personally selected and reviewed.
+- Authenticate or act on behalf of any account other than the operator's own.
+- Sell, rent, or share API credentials or tokens with a third party.
+
+4. Responsibility
+
+The operator is solely responsible for the content published through the app
+and for compliance with TikTok's Community Guidelines and Developer Terms of
+Service.
+
+5. Changes
+
+Because this is a personal tool, these terms may be updated as the tool's
+scope changes. The effective date above reflects the latest revision.
+
+
+PRIVACY POLICY
+
+1. Data collected
+
+The app stores, locally on the operator's own computer only, the OAuth access
+token and refresh token issued by TikTok after authorization, plus the minimal
+account identifier needed to publish content (open_id). No other personal data
+is collected from TikTok or from any viewer of the published videos.
+
+2. Data storage
+
+Tokens are written to a local file on the operator's computer. They are never
+transmitted anywhere except directly to TikTok's own API endpoints
+(open.tiktokapis.com) to refresh a session or publish a video.
+
+3. Data sharing
+
+No data is sold, rented, or shared with any third party, advertiser, or
+analytics service. There are no other users of this application besides its
+single operator.
+
+4. Data deletion
+
+The operator can revoke access at any time from TikTok's account settings, or
+delete the local token file to remove all locally stored credentials
+immediately.
+
+5. Contact
+
+Questions about this policy can be directed to the developer account
+associated with this application in the TikTok for Developers portal.
