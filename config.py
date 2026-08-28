@@ -192,3 +192,10 @@ AMOSTRA_FPS = 4                  # quantos frames/s analisar p/ achar rosto
 # Dano certo contra ganho hipotetico. O modulo fica pronto caso apareca
 # evidencia de verdade. Ver engine/suavizar.py.
 SUAVIZAR_TEXTO = False
+
+# ------------------------------------------------- canal de comida
+# Troca o prompt de selecao pelo PROMPT_RECEITA (engine/selecao.py).
+# O padrao do motor original e' entrevista; aqui o gancho e' o prato
+# pronto, nao uma frase, e trecho com medida vale mais que trecho de
+# conversa. `getattr` na leitura, entao motor sem esta linha nao quebra.
+MODO_RECEITA = True

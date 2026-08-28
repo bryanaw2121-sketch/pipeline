@@ -148,6 +148,59 @@ Responda SOMENTE com JSON válido, sem markdown, neste formato:
 Ordene do maior para o menor "nota". Use segundos absolutos com 1 decimal."""
 
 
+# --------------------------------------------------------------- modo receita
+# O PROMPT acima foi desenhado pra entrevista: "frase de impacto", "pausa
+# natural da fala", climax numa ideia dita. Receita nao funciona assim — o
+# valor esta' na IMAGEM e na instrucao exata, e quem fala costuma falar pouco.
+#
+# O que muda, e por que:
+#  - o gancho e' o PRATO PRONTO, nao uma frase. O gargalo medido do outro canal
+#    e' retencao: 98,7% do trafego vem da Para Voce e a audiencia sai aos 0:02.
+#    Comecar na apresentacao do cozinheiro perde essa janela inteira.
+#  - o fecho e' o RESULTADO, nao a conclusao falada.
+#  - trecho que cita ingrediente e quantidade vale MAIS, porque e' onde a
+#    conversao de medida aparece — o diferencial do canal (engine/conversoes.py).
+PROMPT_RECEITA = """Voce e' editor de cortes de receita. Analise este {tipo}
+INTEIRO e escolha os {n} melhores momentos.
+
+ESTRUTURA DE UM CORTE DE RECEITA — as tres partes dentro do mesmo trecho:
+1. ABERTURA (primeiros ~2s): comece com o PRATO PRONTO na tela, ou com o
+   momento mais bonito do preparo (algo derretendo, dourando, sendo cortado).
+   NUNCA comece com o cozinheiro se apresentando, falando "oi pessoal",
+   explicando o que vai fazer, ou com tela de titulo. Corte DEPOIS disso.
+2. PREPARO: o passo que faz diferenca — a tecnica, o ingrediente inesperado,
+   a quantidade que surpreende. Nao precisa da receita inteira; precisa da
+   parte que a pessoa nao sabia.
+3. RESULTADO: termine no prato pronto ou na primeira mordida. Nunca inclua
+   despedida, "se inscreva", ou o cozinheiro falando depois de comer.
+
+CRITERIOS (nesta ordem de peso):
+1. Comida na tela nos 2 primeiros segundos. Sem isso o corte nao serve.
+2. O trecho cita INGREDIENTE e QUANTIDADE em algum momento. Isso vale muito:
+   e' onde a conversao de medida aparece na legenda, que e' o diferencial
+   deste canal. Prefira trechos com medida a trechos so' de conversa.
+3. Receita COMPLETA o suficiente pra pessoa entender e querer repetir.
+4. Apetite: closes, vapor, textura, som de fritura ou corte.
+5. Corte em pausa natural da fala.
+
+REGRAS DURAS:
+- Duracao entre {dmin} e {dmax} segundos. Nunca fora disso.
+- O minimo de {dmin}s e' INEGOCIAVEL (monetizacao). Trecho otimo de 50s nao
+  serve: abra o recorte pra pegar o preparo em volta, ou descarte.
+- NAO escolha trecho onde o cozinheiro so' fala, sem comida na tela.
+- NAO escolha trecho de tela parada (titulo, lista de ingredientes escrita).
+- Os trechos NAO podem se sobrepor.
+
+CAMPO EXTRA obrigatorio neste modo, alem dos demais:
+- "tem_medida": true se o trecho cita quantidade de ingrediente, false se nao.
+
+IDIOMA (titulo, descricao, tags, porque): SEMPRE portugues do Brasil, mesmo
+que a fala original esteja em outro idioma.
+
+TITULO: diga o PRATO e o que ele tem de diferente. Curiosidade sem enganar.
+Maximo 80 caracteres, sem hashtag."""
+
+
 def _subir_arquivo(caminho: Path, mime: str, chave: str) -> str:
     """Upload resumable para a File API do Gemini."""
     tam = caminho.stat().st_size
@@ -332,8 +385,9 @@ def escolher(caminho: Path, dur_total: float, usar_video: bool,
     """
     mime = "video/mp4" if usar_video else "audio/flac"
     tipo = "vídeo" if usar_video else "áudio"
-    prompt = PROMPT.format(tipo=tipo, n=qtd,
-                           dmin=config.DUR_MIN, dmax=config.DUR_MAX)
+    base = PROMPT_RECEITA if getattr(config, "MODO_RECEITA", False) else PROMPT
+    prompt = base.format(tipo=tipo, n=qtd,
+                         dmin=config.DUR_MIN, dmax=config.DUR_MAX)
 
     def corpo(uri):
         return {"contents": [{"parts": [
