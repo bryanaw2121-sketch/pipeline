@@ -27,7 +27,12 @@ async def _sintetizar(texto: str, destino: Path, voz: str):
     from . import numeros
     # Mesmo conserto do voz_clonada: o defeito e' dos dois caminhos de
     # TTS, nao so' do que estava ativo em 22/08/2026.
-    comm = edge_tts.Communicate(numeros.por_extenso(texto), voice=voz)
+    from . import conversoes
+    # Unidade abreviada vira palavra ANTES do numeros.py: "240 g" tem que
+    # sair "duzentos e quarenta gramas", nao "duzentos e quarenta ge".
+    # Nos DOIS caminhos de TTS, porque o defeito e' dos dois.
+    comm = edge_tts.Communicate(
+        numeros.por_extenso(conversoes.para_fala(texto)), voice=voz)
     await comm.save(str(destino))
 
 

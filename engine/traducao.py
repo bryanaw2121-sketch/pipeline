@@ -114,6 +114,13 @@ def dica_de_genero(genero: str | None) -> str:
 
 
 def _traduzir_texto(texto: str, prompt: str = PROMPT, genero: str | None = None) -> str:
+    # Converte medida ANTES de traduzir: o Gemini recebe a receita ja' em
+    # grama e C e so' traduz o texto em volta. Deixar a conversao pra depois
+    # da traducao daria ao modelo a chance de "ajudar" e desconverter — e a
+    # regra de densidade por ingrediente ele nao tem. So' age em modo receita.
+    if getattr(config, "MODO_RECEITA", False):
+        from . import conversoes
+        texto, _selos = conversoes.converter(texto)
     if not texto.strip():
         return texto
 

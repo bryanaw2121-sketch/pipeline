@@ -59,7 +59,8 @@ def _falar(texto: str, destino: Path, amostra_voz: Path, idioma: str) -> Path:
     # Numero por extenso SO' aqui, no ponto em que o texto vira audio. A
     # legenda na tela continua com o digito ("2030" le' melhor que "dois mil
     # e trinta" escrito), e o `timing` devolvido segue com o texto original.
-    falado = numeros.por_extenso(texto)
+    from . import conversoes
+    falado = numeros.por_extenso(conversoes.para_fala(texto))
     wav = modelo.generate(falado, audio_prompt_path=str(amostra_voz), language_id=idioma)
     ta.save(str(destino), wav, modelo.sr)
     return destino
