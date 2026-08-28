@@ -216,7 +216,7 @@ def converter(texto: str) -> tuple[str, list[str]]:
     # pontuacao. Passa na legenda, mas o TTS respira nesse espaco e a fala
     # sai truncada — e o Bryan pediu que dubagem e legenda ficassem redondas.
     t = re.sub(r"[ 	]{2,}", " ", t)
-    t = re.sub(r"\s+([,.;:!?])", r"", t)
+    t = re.sub(r"\s+([,.;:!?])", r"\1", t)
     return t.strip(), achados
 
 
@@ -229,7 +229,14 @@ def converter(texto: str) -> tuple[str, list[str]]:
 # digito, mas nao sabe nada de unidade.
 #
 # ORDEM: converter() -> para_fala() -> numeros.py -> TTS.
+# Concordancia antes de tudo: o numeros.py troca "1" por "um" sem olhar o
+# genero do substantivo, e "um colher de cha" e' erro de portugues saindo
+# pela boca do narrador. O Bryan pediu a dubagem redonda; isto e' parte.
+FEMININAS = ['colher', 'colheres', 'xicara', 'xicaras', 'xícara', 'xícaras', 'pitada', 'pitadas', 'lata', 'latas', 'fatia', 'fatias']
+
 UNIDADES_FALADAS = [
+    (r"\b1 (?=(?:colher|colheres|xicara|xicaras|xícara|xícaras|pitada|pitadas|lata|latas|fatia|fatias)\b)", "uma "),
+    (r"\b2 (?=(?:colher|colheres|xicara|xicaras|xícara|xícaras|pitada|pitadas|lata|latas|fatia|fatias)\b)", "duas "),
     (r"(\d)\s*°\s*C\b", r"\1 graus"),
     (r"(\d)\s*°\s*F\b", r"\1 graus Fahrenheit"),
     (r"(\d)\s*ml\b", r"\1 mililitros"),
