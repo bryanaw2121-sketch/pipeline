@@ -17,7 +17,10 @@ from pathlib import Path
 import config
 from publicar_tiktok import legenda_do_clipe
 
-PADRAO_DESTINO = Path.home() / "Desktop" / "Outputs TikTok"
+# Pasta PROPRIA deste canal. O padrao herdado era "Outputs TikTok", igual
+# nos dois motores — os clipes dos dois canais cairiam na mesma pasta e se
+# misturariam na hora de escolher o que postar.
+PADRAO_DESTINO = Path.home() / "Desktop" / "Outputs Cozinha"
 
 
 def _pasta_por_nota(nota: float) -> str:
