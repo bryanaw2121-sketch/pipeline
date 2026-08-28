@@ -61,9 +61,16 @@ QTD_CLIPES = 10
 # no tempo final, e ficar em 60,4s seria perder tudo por 0,4s.
 DUR_MIN = 65                     # segundos
 
-# DUR_MAX = 110: acima disso fica difícil sustentar os ~50% de retenção
-# que a visualização qualificada também exige. Era 120.
-DUR_MAX = 110
+# Subido de 110 para 210 neste canal (28/08/2026, pedido do Bryan: "cuidado
+# para nao cortar a receita no meio"). Os DOIS cortes do prototipo fecharam
+# em 110,0s e 109,8s — colados no teto: a receita nao cabia, e o corte
+# terminava onde o relogio mandava, nao onde a receita acabava.
+#
+# O comentario antigo dizia que acima de 120s fica dificil sustentar os ~50%
+# de retencao que a visualizacao qualificada exige. Continua verdade, e o
+# custo e real. A troca e deliberada: receita pela metade nao serve pra nada,
+# e retencao alta num passo a passo que a pessoa nao consegue seguir nao vale.
+DUR_MAX = 210
 
 # ------------------------------------------------- corte de silêncios
 # "Decupagem": remover as pausas mortas é o ajuste de RETENÇÃO de maior

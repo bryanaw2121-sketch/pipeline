@@ -191,10 +191,30 @@ CRITERIOS (nesta ordem de peso):
 4. Apetite: closes, vapor, textura, som de fritura ou corte.
 5. Corte em pausa natural da fala.
 
+REGRA MAIS IMPORTANTE — O CORTE TEM QUE SER SEGUIVEL SOZINHO:
+Quem assiste esta tentando FAZER o prato. Um corte que termina no meio de um
+passo nao e' so' ruim, e' inutil: a pessoa fica sem saber o que vem depois e
+nao consegue cozinhar.
+
+O trecho precisa ser uma UNIDADE COMPLETA. Duas formas valem:
+  (a) a receita inteira, do inicio ao prato pronto; ou
+  (b) uma etapa que se basta — "a massa", "o recheio", "a cobertura" — com
+      comeco, meio e fim dentro do proprio corte.
+
+NUNCA corte no meio de uma instrucao nem no meio da lista de ingredientes.
+Se o passo nao couber inteiro no tempo, escolha OUTRO trecho — nao entregue
+metade.
+
+Se for uma etapa (caso b), o TITULO precisa dizer isso com honestidade
+("Como fazer a massa do donut"), nunca prometer a receita completa.
+
 REGRAS DURAS:
 - Duracao entre {dmin} e {dmax} segundos. Nunca fora disso.
 - O minimo de {dmin}s e' INEGOCIAVEL (monetizacao). Trecho otimo de 50s nao
   serve: abra o recorte pra pegar o preparo em volta, ou descarte.
+- Prefira usar o tempo de que precisa ate {dmax}s a cortar um passo pela
+  metade. Ficar em 90s cortando a receita no meio e PIOR que ficar em 180s
+  entregando ela inteira.
 - NAO escolha trecho onde o cozinheiro so' fala, sem comida na tela.
 - NAO escolha trecho de tela parada (titulo, lista de ingredientes escrita).
 - Os trechos NAO podem se sobrepor.
@@ -212,7 +232,10 @@ Maximo 80 caracteres, sem hashtag.
     # existir NO ESQUEMA. Pedi-lo em prosa nao bastou: o modelo segue o
     # JSON do fim e ignorou. Os dois cortes de 28/08 pegaram montagem e
     # caramelizacao — nenhum mostrava medida, que e' o diferencial.
-    '  "tem_medida": <true se o trecho cita quantidade de ingrediente>,\n'))
+    '  "tem_medida": <true se o trecho cita quantidade de ingrediente>,\n'
+    '  "escopo": "<receita-completa | etapa>",\n'
+    '  "seguivel": <true se quem assistir SO ESTE corte consegue executar\n'
+    '     o que ele promete, do comeco ao fim, sem outro video>,\n'))
 
 
 def _subir_arquivo(caminho: Path, mime: str, chave: str) -> str:
