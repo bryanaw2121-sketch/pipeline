@@ -204,6 +204,26 @@ def converter(texto: str) -> tuple[str, list[str]]:
         return f"{_bonito(g)} g"
     t = re.sub(r"(\d+(?:[.,]\d+)?)\s*(oz|ounces?|lbs?|pounds?)\b", peso, t, flags=re.I)
 
+    # Forma/assadeira em polegadas: "9 by 13 pan" -> "23 por 33 cm". Vem ANTES
+    # da polegada solta, porque "9 by 13" tem dois numeros e a regra simples
+    # converteria so' o primeiro. Sem isto o Gemini improvisava a conversao e
+    # errava: disse "20 por 30" onde o certo e' 23x33.
+    def forma(m):
+        a = _num(m.group(1)); b = _num(m.group(2))
+        ca, cb = round(a * 2.54), round(b * 2.54)
+        achados.append(f"forma {m.group(1)}x{m.group(2)} pol = {ca}x{cb} cm")
+        return f"{ca} por {cb} cm "
+    t = re.sub(r"(\d+(?:[.,]\d+)?)\s*(?:x|by|por)\s*(\d+(?:[.,]\d+)?)\s*"
+               r"(?:-?\s*inch(?:es)?)?\s*(?=pan|dish|baking|forma|assadeira|tin)",
+               forma, t, flags=re.I)
+
+    def polegada(m):
+        v_ = _num(m.group(1))
+        cm = v_ * 2.54
+        achados.append(f"{m.group(1)} pol = {_bonito(cm)} cm")
+        return f"{_bonito(cm)} cm"
+    t = re.sub(r"(\d+\s*/\s*\d+|\d+(?:[.,]\d+)?|[½¼¾])\s*(?:-\s*)?inch(?:es)?", polegada, t, flags=re.I)
+
     def stick(m):
         q = _num(m.group(1)) or 1
         achados.append(f"{m.group(1)} stick(s) de manteiga = {_bonito(q*113)} g")

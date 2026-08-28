@@ -215,7 +215,11 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
             # 'A ESPECIALISTA EXPLICOU' com um homem na tela.
             segmentos = traducao.traduzir_segmentos(
                 ps, narrar=dublar and not fala_literal,
-                genero_falante=c.get("genero_falante"))
+                genero_falante=c.get("genero_falante"),
+                # Fala literal COM dublagem tambem traduz o texto inteiro de
+                # uma vez. Sem isto cada janela de ~4s virava uma frase com
+                # ponto final, e o TTS pausava no meio das frases.
+                literal_completo=dublar and fala_literal)
             ps = traducao.segmentos_para_palavras(segmentos)
             if dublar:
                 if config.VOZ_CLONADA_ATIVA:

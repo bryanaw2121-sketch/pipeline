@@ -94,7 +94,12 @@ GRADE_CINEMATICO = False
 # ------------------------------------------------- voz clonada (04/08/2026)
 # Chatterbox Multilingual, self-hosted, MIT, grátis — clona a voz do Bryan
 # a partir de uma amostra. Só entra em ação com --dublar. Ver engine/voz_clonada.py.
-VOZ_CLONADA_ATIVA = True
+# PROVISORIO 28/08: desligada pra destravar o corte-prototipo. Esta maquina
+# nao tem torch/torchaudio/chatterbox/perth — nem neste motor nem no do outro
+# canal — entao a voz clonada nao roda aqui hoje. Usa edge-tts ate' a decisao
+# sobre voz ser fechada. O Bryan quer a voz clonada; isto NAO e' a escolha
+# final, e' o que permite ver o resto do corte agora.
+VOZ_CLONADA_ATIVA = False
 VOZ_CLONADA_AMOSTRA = RAIZ / "vozes" / "bryan_amostra.wav"
 
 # Piso de gancho (0-10). O Gemini já devolve `forca_gancho` por clipe, mas

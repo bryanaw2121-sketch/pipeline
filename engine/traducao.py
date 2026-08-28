@@ -89,6 +89,32 @@ Fala original:
 {texto}"""
 
 
+PROMPT_LITERAL = """Traduza a fala abaixo para português do Brasil. É a fala de
+uma pessoa ensinando uma receita, em vídeo curto.
+
+REGRAS:
+1. Traduza FIELMENTE o que a pessoa diz — a instrução exata importa ("bata até
+   dobrar de volume" não pode virar "misture bem"). Não é narração em terceira
+   pessoa: é a própria pessoa falando.
+2. Escreva em FRASES COMPLETAS, com pontuação correta. O texto vai ser lido por
+   uma voz sintética, e cada ponto final vira uma PAUSA. Ponto no meio de uma
+   frase faz a voz parar no lugar errado.
+3. Remova cacoetes, gagueira e repetição da transcrição ("agora, agora", "e aí,
+   e aí"). Uma vez só.
+4. NÃO CONVERTA MEDIDA NENHUMA. Os números já vêm convertidos e corretos:
+   copie exatamente como estão (gramas, mililitros, °C, colheres, centímetros).
+   Se aparecer uma medida que você acha estranha, MANTENHA assim mesmo.
+   Converter por conta própria já produziu erro: "9x13 polegadas" virou
+   "20 por 30" quando o certo é 23x33.
+5. Nome de prato estrangeiro: escolha UMA grafia e repita igual até o fim
+   (cobbler foi lido de três jeitos diferentes no mesmo vídeo).
+
+Responda SOMENTE com o texto traduzido, sem aspas, sem comentário, sem markdown.
+
+Fala original:
+{texto}"""
+
+
 def dica_de_genero(genero: str | None) -> str:
     """Frase que vai NO TOPO do prompt de narração, quando a seleção soube o
     gênero de quem fala.
@@ -248,7 +274,8 @@ def _distribuir_texto_em_janelas(texto: str, grupos: list[list[dict]]) -> list[d
 
 def traduzir_segmentos(palavras: list[dict], tamanho_janela_s: float = 4.0,
                         narrar: bool = False,
-                        genero_falante: str | None = None) -> list[dict]:
+                        genero_falante: str | None = None,
+                        literal_completo: bool = False) -> list[dict]:
     """Recebe [{palavra, inicio, fim}] no idioma original e devolve trechos
     traduzidos em texto corrido: [{inicio, fim, texto}]. Usado pra dublagem
     (TTS fala o texto inteiro do trecho, não palavra por palavra).
@@ -261,12 +288,24 @@ def traduzir_segmentos(palavras: list[dict], tamanho_janela_s: float = 4.0,
     if not palavras:
         return []
 
-    if narrar:
+    if narrar or literal_completo:
+        # Os dois traduzem o texto INTEIRO de uma vez e so' depois distribuem
+        # nas janelas de tempo. A diferenca e' o prompt: narrar reescreve como
+        # narrador; literal_completo mantem a fala da pessoa.
+        #
+        # POR QUE literal_completo existe (28/08/2026): `--fala-literal` caia no
+        # caminho de baixo, que traduz cada janela de ~4s SOZINHA. Cada janela
+        # ganhava ponto final proprio, e o TTS poe uma PAUSA em cada ponto — a
+        # dublagem saiu "Mistura tudo ate. / Incorporar." e "Se. / Ja se
+        # perguntou". Uma janela que pegou so' o "Allow" de "allow to cool"
+        # virou a frase "Permitir." sozinha no fim do video.
         texto_completo = " ".join(p["palavra"] for p in palavras)
-        texto_narrado = _traduzir_texto(texto_completo, prompt=PROMPT_NARRACAO,
-                                        genero=genero_falante)
+        texto_novo = _traduzir_texto(
+            texto_completo,
+            prompt=PROMPT_NARRACAO if narrar else PROMPT_LITERAL,
+            genero=genero_falante if narrar else None)
         grupos = _agrupar(palavras, tamanho_janela_s)
-        return _distribuir_texto_em_janelas(texto_narrado, grupos)
+        return _distribuir_texto_em_janelas(texto_novo, grupos)
 
     resultado = []
     for grupo in _agrupar(palavras, tamanho_janela_s):
