@@ -37,6 +37,33 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      # O YouTube recusa os IPs do Actions: "Sign in to confirm you're not a
+      # bot". Estas tres defesas vinham do workflow do outro canal e eu as
+      # apaguei ao enxugar — o run #1 morreu exatamente aqui.
+      - run: pip install -U yt-dlp-invidious
+
+      - name: Provedor de PO token (bgutil)
+        continue-on-error: true
+        run: |
+          pip install -U bgutil-ytdlp-pot-provider
+          git clone --single-branch --branch 1.3.1 https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git "$RUNNER_TEMP/bgutil"
+          cd "$RUNNER_TEMP/bgutil/server"
+          npm ci
+          npx tsc
+          echo "YTDLP_POT_SERVER=$RUNNER_TEMP/bgutil/server" >> "$GITHUB_ENV"
+
+      - name: Cookies do YouTube (se o secret existir)
+        env:
+          YTDLP_COOKIES: ${{ secrets.YTDLP_COOKIES }}
+        run: |
+          if [ -n "$YTDLP_COOKIES" ]; then
+            printf '%s' "$YTDLP_COOKIES" > "$RUNNER_TEMP/cookies.txt"
+            echo "YTDLP_COOKIES_FILE=$RUNNER_TEMP/cookies.txt" >> "$GITHUB_ENV"
+            echo "cookies gravados"
+          else
+            echo "::warning::sem YTDLP_COOKIES — dependendo so' do Invidious e do PO token"
+          fi
+
       # Voz clonada em passo separado e TOLERANTE: se o chatterbox nao
       # instalar, o job segue e cai no edge-tts, em vez de morrer depois de
       # ja' ter gasto Gemini e Groq na selecao e na traducao.
@@ -61,7 +88,13 @@ jobs:
         if: steps.voz.outcome != 'success'
         run: |
           echo "::warning::chatterbox nao instalou — saindo com edge-tts (voz PROVISORIA)"
-          python -c "import io; p='config.py'; s=io.open(p,encoding='utf-8').read(); io.open(p,'w',encoding='utf-8').write(s.replace('VOZ_CLONADA_ATIVA = True','VOZ_CLONADA_ATIVA = False'))"
+      # O chatterbox rebaixa o numpy pra 1.26 e o opencv 5 exige >=2. Descobrir
+      # isso na hora do render jogaria fora o Gemini e o Groq ja gastos.
+      - name: Conferir que o motor importa (falha barata antes de gastar API)
+        run: |
+          python -c "import numpy; print('numpy', numpy.__version__)"
+          python -c "import cv2; print('cv2', cv2.__version__)"
+          python -c "import mediapipe, PIL, num2words; print('render ok')"
 
       - name: Cortar
         env:
