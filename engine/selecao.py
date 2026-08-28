@@ -10,59 +10,12 @@ import requests
 import config
 from . import keys
 
-PROMPT = """Você é editor de cortes virais. Analise este {tipo} INTEIRO e escolha
-os {n} melhores momentos para YouTube Shorts.
-
-ESTRUTURA GPC (Gancho-Progresso-Clímax) — o trecho escolhido precisa ter as
-três partes dentro dele, não só o gancho:
-1. GANCHO (primeiros ~2s do corte): frase de impacto que já entrega tensão
-   ou dúvida. Nunca comece explicando contexto ("hoje eu vou falar sobre...",
-   "então like é o seguinte...") — corte DEPOIS dessa introdução, direto no
-   ponto.
-2. PROGRESSO: a fala cumpre o que o gancho prometeu, sem enrolação.
-3. CLÍMAX: a ideia se resolve dentro do próprio corte — vira redondo sozinho,
-   sem precisar do resto do vídeo pra fazer sentido. Termine logo após o pico
-   (frase mais forte), de forma abrupta — NUNCA inclua despedida, agradecimento,
-   "se inscreva", resumo do que foi dito ou qualquer fala de encerramento
-   depois do pico: isso quebra a retenção e "trava" o Short no algoritmo.
-
-CRITÉRIOS (nesta ordem de peso):
-1. Gancho nos 2 primeiros segundos — precisa prender antes do usuário deslizar.
-2. Ideia COMPLETA (GPC inteiro, ver acima).
-3. Carga emocional: surpresa, contradição, revelação, opinião forte, humor.
-4. Corte em pausa natural da fala — nunca no meio de uma palavra ou frase.
-
-REGRAS DURAS:
-- Duração entre {dmin} e {dmax} segundos. Nunca fora disso.
-- O mínimo de {dmin}s é INEGOCIÁVEL: o TikTok só paga por vídeo acima de
-  60 segundos. Um trecho ótimo de 50s não serve — ou você abre o recorte
-  pra pegar o contexto em volta e passar de {dmin}s, ou descarta o trecho.
-- Ponto ideal: 70-95s. Só passe de 95s (até o limite de {dmax}) quando o
-  arco da história PRECISA do contexto todo pra fazer sentido — não estique
-  por preguiça de cortar.
-- Preencher com enrolação pra alcançar {dmin}s é PIOR que descartar:
-  enrolação derruba a retenção, e retenção é o que governa a DISTRIBUIÇÃO
-  do vídeo pelo algoritmo. Um clipe elegível que ninguém assiste não vale
-  nada.
-- Os trechos NÃO podem se sobrepor.
-- Prefira começar logo antes da frase de impacto, não muito antes.
-
-IDIOMA DO TEXTO (título, descrição, tags, porque): SEMPRE em português do
-Brasil, MESMO QUE a fala original do vídeo esteja em outro idioma (ex:
-inglês). Só o "gancho" pode citar a frase original quando fizer sentido.
-
-TÍTULO: seja bem chamativo — gera curiosidade, usa números/contraste/
-tensão quando possível, sem ser genérico. Pense em título que faz alguém
-parar de rolar o feed. Máximo 80 caracteres, sem hashtag.
-
-DESCRIÇÃO: coloque a palavra-chave mais importante do assunto já nos
-primeiros caracteres (não enrole com frase de efeito antes dela) — é o que
-o YouTube lê primeiro pra indexar o vídeo na busca.
-
-CLASSIFICAÇÃO POR TAGS (pra permitir comparar e filtrar candidatos entre
-vídeos diferentes, não só pela nota geral) — escolha 1 de cada dimensão,
-a que melhor descreve o corte:
-
+# Taxonomia e esquema de saida, COMPARTILHADOS pelos dois prompts.
+# Extraidos em 28/08 depois de o PROMPT_RECEITA nascer sem eles: eu substitui
+# o prompt inteiro e deixei de fora a especificacao do JSON, entao o Gemini
+# devolveu texto livre e o _validar descartou tudo — "nenhum momento aprovado",
+# com exit 0 e zero clipes. Compartilhar evita que o proximo prompt repita.
+_CAUDA_SAIDA = """
 tipo_conteudo: revelacao | debate | historia-pessoal | previsao | alerta |
   explicacao | controversia | comparacao | noticia-quente | humor |
   conselho-de-vida | demonstracao-tecnica
@@ -145,7 +98,62 @@ Responda SOMENTE com JSON válido, sem markdown, neste formato:
   "valor_social": <0-10>
 }}]}}
 
-Ordene do maior para o menor "nota". Use segundos absolutos com 1 decimal."""
+Ordene do maior para o menor "nota". Use segundos absolutos com 1 decimal.
+"""
+
+PROMPT = ("""Você é editor de cortes virais. Analise este {tipo} INTEIRO e escolha
+os {n} melhores momentos para YouTube Shorts.
+
+ESTRUTURA GPC (Gancho-Progresso-Clímax) — o trecho escolhido precisa ter as
+três partes dentro dele, não só o gancho:
+1. GANCHO (primeiros ~2s do corte): frase de impacto que já entrega tensão
+   ou dúvida. Nunca comece explicando contexto ("hoje eu vou falar sobre...",
+   "então like é o seguinte...") — corte DEPOIS dessa introdução, direto no
+   ponto.
+2. PROGRESSO: a fala cumpre o que o gancho prometeu, sem enrolação.
+3. CLÍMAX: a ideia se resolve dentro do próprio corte — vira redondo sozinho,
+   sem precisar do resto do vídeo pra fazer sentido. Termine logo após o pico
+   (frase mais forte), de forma abrupta — NUNCA inclua despedida, agradecimento,
+   "se inscreva", resumo do que foi dito ou qualquer fala de encerramento
+   depois do pico: isso quebra a retenção e "trava" o Short no algoritmo.
+
+CRITÉRIOS (nesta ordem de peso):
+1. Gancho nos 2 primeiros segundos — precisa prender antes do usuário deslizar.
+2. Ideia COMPLETA (GPC inteiro, ver acima).
+3. Carga emocional: surpresa, contradição, revelação, opinião forte, humor.
+4. Corte em pausa natural da fala — nunca no meio de uma palavra ou frase.
+
+REGRAS DURAS:
+- Duração entre {dmin} e {dmax} segundos. Nunca fora disso.
+- O mínimo de {dmin}s é INEGOCIÁVEL: o TikTok só paga por vídeo acima de
+  60 segundos. Um trecho ótimo de 50s não serve — ou você abre o recorte
+  pra pegar o contexto em volta e passar de {dmin}s, ou descarta o trecho.
+- Ponto ideal: 70-95s. Só passe de 95s (até o limite de {dmax}) quando o
+  arco da história PRECISA do contexto todo pra fazer sentido — não estique
+  por preguiça de cortar.
+- Preencher com enrolação pra alcançar {dmin}s é PIOR que descartar:
+  enrolação derruba a retenção, e retenção é o que governa a DISTRIBUIÇÃO
+  do vídeo pelo algoritmo. Um clipe elegível que ninguém assiste não vale
+  nada.
+- Os trechos NÃO podem se sobrepor.
+- Prefira começar logo antes da frase de impacto, não muito antes.
+
+IDIOMA DO TEXTO (título, descrição, tags, porque): SEMPRE em português do
+Brasil, MESMO QUE a fala original do vídeo esteja em outro idioma (ex:
+inglês). Só o "gancho" pode citar a frase original quando fizer sentido.
+
+TÍTULO: seja bem chamativo — gera curiosidade, usa números/contraste/
+tensão quando possível, sem ser genérico. Pense em título que faz alguém
+parar de rolar o feed. Máximo 80 caracteres, sem hashtag.
+
+DESCRIÇÃO: coloque a palavra-chave mais importante do assunto já nos
+primeiros caracteres (não enrole com frase de efeito antes dela) — é o que
+o YouTube lê primeiro pra indexar o vídeo na busca.
+
+CLASSIFICAÇÃO POR TAGS (pra permitir comparar e filtrar candidatos entre
+vídeos diferentes, não só pela nota geral) — escolha 1 de cada dimensão,
+a que melhor descreve o corte:
+""" + _CAUDA_SAIDA)
 
 
 # --------------------------------------------------------------- modo receita
@@ -160,7 +168,7 @@ Ordene do maior para o menor "nota". Use segundos absolutos com 1 decimal."""
 #  - o fecho e' o RESULTADO, nao a conclusao falada.
 #  - trecho que cita ingrediente e quantidade vale MAIS, porque e' onde a
 #    conversao de medida aparece — o diferencial do canal (engine/conversoes.py).
-PROMPT_RECEITA = """Voce e' editor de cortes de receita. Analise este {tipo}
+PROMPT_RECEITA = ("""Voce e' editor de cortes de receita. Analise este {tipo}
 INTEIRO e escolha os {n} melhores momentos.
 
 ESTRUTURA DE UM CORTE DE RECEITA — as tres partes dentro do mesmo trecho:
@@ -198,7 +206,8 @@ IDIOMA (titulo, descricao, tags, porque): SEMPRE portugues do Brasil, mesmo
 que a fala original esteja em outro idioma.
 
 TITULO: diga o PRATO e o que ele tem de diferente. Curiosidade sem enganar.
-Maximo 80 caracteres, sem hashtag."""
+Maximo 80 caracteres, sem hashtag.
+""" + _CAUDA_SAIDA)
 
 
 def _subir_arquivo(caminho: Path, mime: str, chave: str) -> str:
