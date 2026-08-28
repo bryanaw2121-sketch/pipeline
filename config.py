@@ -94,12 +94,11 @@ GRADE_CINEMATICO = False
 # ------------------------------------------------- voz clonada (04/08/2026)
 # Chatterbox Multilingual, self-hosted, MIT, grátis — clona a voz do Bryan
 # a partir de uma amostra. Só entra em ação com --dublar. Ver engine/voz_clonada.py.
-# PROVISORIO 28/08: desligada pra destravar o corte-prototipo. Esta maquina
-# nao tem torch/torchaudio/chatterbox/perth — nem neste motor nem no do outro
-# canal — entao a voz clonada nao roda aqui hoje. Usa edge-tts ate' a decisao
-# sobre voz ser fechada. O Bryan quer a voz clonada; isto NAO e' a escolha
-# final, e' o que permite ver o resto do corte agora.
-VOZ_CLONADA_ATIVA = False
+# Voz clonada LIGADA. Ela nao roda na maquina do Bryan (o spacy-pkuseg nao
+# compila no Python 3.14 de la'), entao o corte roda no GitHub Actions, com
+# Python 3.12 — ver .github/workflows/cortar_receita.yml. Se o chatterbox
+# falhar no runner, o proprio workflow desliga esta flag e cai no edge-tts.
+VOZ_CLONADA_ATIVA = True
 VOZ_CLONADA_AMOSTRA = RAIZ / "vozes" / "bryan_amostra.wav"
 
 # Piso de gancho (0-10). O Gemini já devolve `forca_gancho` por clipe, mas

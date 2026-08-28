@@ -75,7 +75,7 @@ Responda SOMENTE com JSON válido, sem markdown, neste formato:
   "inicio_s": <float, segundos desde o começo>,
   "fim_s": <float>,
   "nota": <0-100, potencial viral>,
-  "gancho": "<a frase exata que prende, curta>",
+{extra}  "gancho": "<a frase exata que prende, curta>",
   "porque": "<1 frase em pt-BR: por que viraliza>",
   "genero_falante": "<masculino | feminino | varios | indefinido — de quem
      aparece falando NESTE trecho. Voce esta' vendo o video, entao decida pela
@@ -153,7 +153,7 @@ o YouTube lê primeiro pra indexar o vídeo na busca.
 CLASSIFICAÇÃO POR TAGS (pra permitir comparar e filtrar candidatos entre
 vídeos diferentes, não só pela nota geral) — escolha 1 de cada dimensão,
 a que melhor descreve o corte:
-""" + _CAUDA_SAIDA)
+""" + _CAUDA_SAIDA.replace("{extra}", ""))
 
 
 # --------------------------------------------------------------- modo receita
@@ -207,7 +207,12 @@ que a fala original esteja em outro idioma.
 
 TITULO: diga o PRATO e o que ele tem de diferente. Curiosidade sem enganar.
 Maximo 80 caracteres, sem hashtag.
-""" + _CAUDA_SAIDA)
+""" + _CAUDA_SAIDA.replace("{extra}",
+    # O criterio "preferir trecho que cita medida" so' pesa se o campo
+    # existir NO ESQUEMA. Pedi-lo em prosa nao bastou: o modelo segue o
+    # JSON do fim e ignorou. Os dois cortes de 28/08 pegaram montagem e
+    # caramelizacao — nenhum mostrava medida, que e' o diferencial.
+    '  "tem_medida": <true se o trecho cita quantidade de ingrediente>,\n'))
 
 
 def _subir_arquivo(caminho: Path, mime: str, chave: str) -> str:
