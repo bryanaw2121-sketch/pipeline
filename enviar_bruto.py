@@ -48,9 +48,12 @@ def baixar(url: str) -> Path:
     destino = TRABALHO / "fonte.mp4"
     if destino.exists():
         destino.unlink()
-    # Mesmo formato que o main.py pede: 480p e' suficiente pro 9:16 e mantem
-    # o arquivo pequeno o bastante pra subir rapido.
-    cmd = ["yt-dlp", "-f", "bv*[height<=480]+ba/b[height<=480]/b",
+    # Formato 18 PRIMEIRO, de proposito. Os formatos separados (video+audio,
+    # ex. 397+251) resolvem no --simulate mas dao 403 no download real: o
+    # YouTube exige um runtime JavaScript que esta maquina nao tem. O 18 e'
+    # combinado e legado, e passa. Medido em 28/08/2026 — e' o que o main.py
+    # acabou usando no primeiro prototipo, por queda de fallback.
+    cmd = ["yt-dlp", "-f", "18/best[height<=480]/b",
            "--merge-output-format", "mp4", "-o", str(destino), url]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0 or not destino.exists():
