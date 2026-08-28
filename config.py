@@ -76,20 +76,19 @@ SILENCIO_LIMIAR_DB = -32     # abaixo disso é considerado silêncio
 SILENCIO_DUR_MIN_S = 0.35    # pausa menor que isso é respiração natural, fica
 SILENCIO_FOLGA_S = 0.10      # deixa nas pontas pra fala não soar cortada
 MARGEM = 0.4                     # respiro antes/depois do corte (s)
-CONGELAMENTO_MAX_S = 4.5  # TODO cozinha: PRECISA SUBIR. Este 4,5 foi medido
-# contra entrevista. Em receita ele descarta justamente os planos que valem:
-# prato pronto parado, panela em fogo baixo, b-roll de bancada. O numero novo
-# sai MEDINDO com material de cozinha, nunca por chute.         # bloco contínuo travado acima disso descarta o candidato
+CONGELAMENTO_MAX_S = 4.5  # TODO: PRECISA SUBIR. Este 4,5 foi medido
+# contra entrevista, e descarta plano deliberadamente parado, que neste
+# formato e' justamente o que vale. O numero novo sai MEDINDO com material
+# real, nunca por chute.         # bloco contínuo travado acima disso descarta o candidato
 
 # ------------------------------------------------- pós-produção (03/08/2026)
 # Estabilização (vidstab) e grade de cor cinematográfica — só ffmpeg nativo,
 # sem GPU, sem asset externo. Ver engine/pos_producao.py.
-# Desligado neste canal: o vidstab existe pra camera na mao, e filmagem de
-# cozinha e' quase toda tripe. Gasta processamento a' toa e corta as bordas,
-# o que pode comer a borda do prato.
+# Desligado: o vidstab existe pra camera na mao, e a fonte deste canal e'
+# quase toda tripe. Gasta processamento a' toa e corta as bordas.
 ESTABILIZAR = False
-# Desligada neste canal: a grade cinematografica puxa pro frio e dessaturado.
-# Comida precisa do oposto — quente e saturada, senao o prato fica sem gosto.
+# Desligada: a grade cinematografica puxa pro frio e dessaturado, e este
+# canal precisa do oposto — quente e saturado.
 GRADE_CINEMATICO = False
 
 # ------------------------------------------------- voz clonada (04/08/2026)

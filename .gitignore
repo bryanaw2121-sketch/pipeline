@@ -39,10 +39,4 @@ vozes/
 buffer_token.txt
 estado/buffer_cota.json
 
-# Projeto Cozinha Importada: segredos NUNCA vao pro git (este repo e publico)
-cozinha/segredos/*
-!cozinha/segredos/SEGREDOS.exemplo.md
 
-# Projeto Cozinha Importada mora FORA deste repo, a pedido do Bryan (28/08):
-# C:/Users/Administrator/Desktop/Tiktok/Cozinha Importada/
-cozinha/

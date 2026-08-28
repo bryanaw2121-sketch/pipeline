@@ -60,7 +60,7 @@ def agenda(inicio: dt.date, dias: int, slots: int = len(ANCORAS),
     for d in range(dias):
         data = inicio + dt.timedelta(days=d)
         # Semente pela data: mesma data, mesma agenda, sempre.
-        rnd = random.Random(f"modofuturo-{data.isoformat()}")
+        rnd = random.Random(f"agenda-{data.isoformat()}")
         for h, m, apelido in ANCORAS[:slots]:
             minuto = m + rnd.randint(-jitter, jitter)
             hora = h
@@ -95,7 +95,7 @@ def semanal(jitter: int = JITTER_MIN, slots: int = len(ANCORAS)) -> list[dict]:
     nomes = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
     linhas = []
     for i, nome in enumerate(nomes):
-        rnd = random.Random(f"modofuturo-semana-{nome}")
+        rnd = random.Random(f"agenda-semana-{nome}")
         for h, m, apelido in ANCORAS[:slots]:
             minuto = m + rnd.randint(-jitter, jitter)
             hora = h
