@@ -24,7 +24,9 @@ import re
 PROMPT_RECEITA_TEXTO = """Abaixo esta a fala de um video de receita, ja em
 portugues.
 
-Escreva a RECEITA em texto, para a descricao do post. Formato exato:
+Escreva a receita para a descricao do post. Formato EXATO:
+
+<uma linha: rende quantas porcoes, e tempo total. Ex: "Rende 2 porcoes - 15 min">
 
 INGREDIENTES
 - item com quantidade
@@ -34,20 +36,47 @@ MODO DE PREPARO
 1. passo curto
 2. passo curto
 
-REGRAS:
-- Maximo 1400 caracteres no total.
-- Quantidade em medida BRASILEIRA. Onde a fala disser "xicara", converta para
-  gramas ou ml: a xicara brasileira varia de 150 a 250 ml e a americana e 240 ml
-  fixos, entao deixar "xicara" e' ambiguo. Farinha 1 xic = 120 g, acucar = 200 g,
-  leite/agua = 240 ml, manteiga = 227 g, mel = 340 g.
-  Colher de sopa e de cha PODEM ficar como estao — a brasileira e a americana
-  sao equivalentes (15 ml e 5 ml).
+SUBSTITUICOES
+- <ingrediente dificil de achar no Brasil> -> <o que usar no lugar>
+
+MEDIDAS
+- <so se voce converteu alguma medida: uma linha curta explicando. Ex:
+  "1 xicara americana = 240 ml. A brasileira varia de 150 a 250 ml, por isso
+  convertemos.">
+
+REGRAS DE MEDIDA — leia com atencao, e' o diferencial do canal:
+- LIQUIDO (leite, agua, oleo, caldo): converta para ml. 1 xicara = 240 ml.
+- SECO E PESAVEL (farinha, acucar, manteiga, mel, aveia): converta para GRAMAS.
+  Farinha 1 xic = 120 g, acucar = 200 g, manteiga = 227 g, mel = 340 g,
+  aveia = 90 g.
+- INGREDIENTE PICADO OU EM PEDACOS (legume, fruta, queijo, castanha): NUNCA em
+  ml e NUNCA em gramas. Mantenha a medida de volume que a fala usou
+  ("1/4 de xicara de pimentao picado") ou use a unidade natural
+  ("1 pimentao medio"). Ninguem pesa pimentao picado nem mede legume em ml —
+  "60 ml de pimentao" e "35 g de pimentao picado" foram os dois erros reais de
+  28/08/2026. A ambiguidade da xicara so' importa em farinha e liquido, onde a
+  diferenca muda a receita; em legume picado, nao muda nada.
+- COLHER de sopa e de cha ficam como estao: a brasileira e a americana sao
+  equivalentes (15 ml e 5 ml).
 - Temperatura sempre em Celsius.
-- NAO invente ingrediente nem passo que nao esta na fala.
-- Se a fala nao disser a quantidade, escreva "a gosto" ou omita. NUNCA chute:
-  numero errado numa receita destroi a confianca, que e' o unico ativo deste
-  canal.
-- Sem introducao, sem despedida, sem hashtag. So a receita.
+
+OUTRAS REGRAS:
+- MEDIDAS: essa secao e a promessa do canal ("350F e 180C. De nada."), entao
+  so aparece quando houve conversao DE VERDADE. Se a receita nao tinha nenhuma
+  medida americana, OMITA a secao — enfeite vazio tira a credibilidade do
+  resto.
+- Maximo 1600 caracteres no total.
+- NAO invente ingrediente, quantidade nem passo que nao esta na fala. Se a fala
+  nao disser a quantidade, escreva "a gosto". Numero chutado numa receita
+  destroi a confianca, que e' o unico ativo deste canal.
+- SUBSTITUICOES: so' liste o que e' de fato dificil no Brasil (endro, buttermilk,
+  feta, xarope de bordo). Se tudo for facil de achar, OMITA a secao inteira.
+- Se a fala nao deixar claro o rendimento ou o tempo, estime pelo contexto de
+  forma conservadora, ou omita a linha.
+- REVISE o portugues antes de responder: palavra inventada numa receita
+  destroi a confianca. Em 28/08/2026 saiu "macios e meciosos" — "meciosos"
+  nao existe.
+- Sem introducao, sem despedida, sem hashtag. So' a receita.
 
 Fala:
 {texto}"""

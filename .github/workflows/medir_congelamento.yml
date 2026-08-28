@@ -1,0 +1,45 @@
+name: Medir congelamento
+
+# Leve de proposito: so baixa o video e roda o freezedetect. Sem Gemini, sem
+# dublagem, sem render. Existe pra calibrar CONGELAMENTO_MAX_S com DADO, que e
+# o que o projeto vinha adiando desde o inicio.
+
+on:
+  workflow_dispatch:
+    inputs:
+      arquivo_id:
+        description: "ID do arquivo no Drive (pasta 1 BRUTOS)"
+        required: true
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install google-api-python-client google-auth
+      - name: Baixar do Drive
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > sa.json
+          python -c "
+          import io
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaIoBaseDownload
+          cred = service_account.Credentials.from_service_account_file('sa.json', scopes=['https://www.googleapis.com/auth/drive'])
+          sv = build('drive','v3',credentials=cred)
+          req = sv.files().get_media(fileId='${{ inputs.arquivo_id }}')
+          with io.FileIO('fonte.mp4','wb') as fh:
+              d = MediaIoBaseDownload(fh, req, chunksize=8*1024*1024)
+              done = False
+              while not done: _, done = d.next_chunk()
+          "
+          rm -f sa.json
+      - name: Medir
+        run: python -X utf8 medir_congelamento.py fonte.mp4
