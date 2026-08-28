@@ -179,8 +179,18 @@ ESTRUTURA DE UM CORTE DE RECEITA — as tres partes dentro do mesmo trecho:
 2. PREPARO: o passo que faz diferenca — a tecnica, o ingrediente inesperado,
    a quantidade que surpreende. Nao precisa da receita inteira; precisa da
    parte que a pessoa nao sabia.
-3. RESULTADO: termine no prato pronto ou na primeira mordida. Nunca inclua
-   despedida, "se inscreva", ou o cozinheiro falando depois de comer.
+3. RESULTADO: termine no prato pronto ou na primeira mordida.
+
+O FECHO E UMA REGRA DURA, NAO UMA SUGESTAO:
+Corte EXATAMENTE no ultimo passo util da receita. Nada depois.
+Nao inclua: conversa depois de comer ("voce gosta?", "hum", "quer um
+pouco?"), reacao de quem prova, despedida, "se inscreva", agradecimento,
+nem o cozinheiro comentando o resultado.
+Isso nao e' preciosismo: no corte de 28/08/2026 sobraram 9 segundos de
+conversa com uma crianca depois do prato pronto. Segundo vazio no fim
+derruba a retencao, que e' o que governa a distribuicao.
+Se a fala util acaba aos 100s e o video segue ate' 115s, o corte
+termina aos 100s.
 
 CRITERIOS (nesta ordem de peso):
 1. Comida na tela nos 2 primeiros segundos. Sem isso o corte nao serve.

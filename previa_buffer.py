@@ -39,7 +39,12 @@ def _gh(url: str, dados=None, metodo=None, tipo="application/json"):
     r = urllib.request.Request(url, data=dados, method=metodo, headers={
         "Authorization": "Bearer " + tok, "Accept": "application/vnd.github+json",
         "User-Agent": "previa", "Content-Type": tipo})
-    return json.load(urllib.request.urlopen(r))
+    resp = urllib.request.urlopen(r)
+    corpo = resp.read()
+    # DELETE devolve 204 com corpo VAZIO. Ler JSON de vazio estoura
+    # JSONDecodeError e derruba o passo inteiro — foi o que quebrou o run de
+    # 28/08 DEPOIS de 99 minutos de corte, com os 5 clipes ja' prontos.
+    return json.loads(corpo) if corpo else {}
 
 
 def subir_asset(arquivo: Path) -> str:

@@ -46,7 +46,14 @@ def _hashtag(tag: str) -> str:
 def _legenda(c: dict) -> str:
     """Legenda pronta pra colar: título, descrição e hashtags válidas."""
     tags = " ".join(_hashtag(t) for t in (c.get("tags") or []) if t)
-    return f"{c.get('titulo','')}\n\n{c.get('descricao','')}\n\n{tags}".strip()
+    # A RECEITA em texto entra entre a descricao e as hashtags. Num canal de
+    # receita a descricao e' o que a pessoa le' com a mao na massa, e e' onde a
+    # conversao de medida aparece escrita — ver engine/receita_texto.py.
+    receita = (c.get("receita_texto") or "").strip()
+    corpo = f"{c.get('titulo','')}" + chr(10)*2 + f"{c.get('descricao','')}"
+    if receita:
+        corpo += chr(10)*2 + receita
+    return (corpo + chr(10)*2 + tags).strip()
 
 
 def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
@@ -225,6 +232,11 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
                 # ponto final, e o TTS pausava no meio das frases.
                 literal_completo=dublar and fala_literal)
             ps = traducao.segmentos_para_palavras(segmentos)
+            if getattr(config, "MODO_RECEITA", False):
+                from engine import receita_texto
+                c["receita_texto"] = receita_texto.gerar(segmentos)
+                if c["receita_texto"]:
+                    print(f"      receita em texto: {len(c['receita_texto'])} chars")
             if dublar:
                 if config.VOZ_CLONADA_ATIVA:
                     print("      dublando (voz clonada, Chatterbox)...")
