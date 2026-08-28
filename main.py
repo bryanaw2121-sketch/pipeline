@@ -193,6 +193,10 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
         print(f"      Groq transcrevendo ({midia.mb(peda):.1f} MB)...")
         status.etapa(nome_fonte, "transcrevendo", c.get("titulo", ""), i, len(clipes))
         ps = transcricao.palavras(peda, idioma)
+        # Guarda a transcricao ORIGINAL antes de `ps` ser sobrescrito pela
+        # versao traduzida — e o que alimenta o FALA.txt la embaixo.
+        palavras_orig = list(ps)
+        segmentos = None
 
         # guardrail de ritmo [PAPER]: acima de ~200 palavras/min a
         # compreensão cai (Weinstein-Shr & Griffiths). A decupagem não
@@ -305,6 +309,33 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
         (pasta / "post.json").write_text(
             json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
         (pasta / "post.txt").write_text(_legenda(c), encoding="utf-8")
+
+        # FALA.txt — tudo o que foi dito no corte, original e traduzido, com
+        # marca de tempo. Pedido do Bryan em 28/08/2026: "ter tudo o que foi
+        # dito sempre evidente quando formos buscar e cortar".
+        #
+        # Ate' aqui a fala nao sobrevivia ao render: o LEGENDAS.txt so' guarda
+        # titulo e hashtag, e o post.json so' metadado. Sem isto nao ha' como
+        # conferir se o corte ficou completo ou parou no meio de um passo —
+        # que e' justamente a regra mais importante deste canal.
+        try:
+            linhas = [f"# {meta.get('titulo','')}",
+                      f"# {meta.get('inicio_s')}s -> {meta.get('fim_s')}s "
+                      f"({meta.get('duracao_s')}s)",
+                      f"# escopo={meta.get('escopo','?')} "
+                      f"seguivel={meta.get('seguivel','?')} "
+                      f"tem_medida={meta.get('tem_medida','?')}", ""]
+            if segmentos:
+                linhas.append("--- TRADUZIDO (o que a voz fala) ---")
+                for sg in segmentos:
+                    linhas.append(f"[{sg['inicio']:7.1f}] {sg['texto']}")
+                linhas.append("")
+            linhas.append("--- ORIGINAL (transcricao da fonte) ---")
+            for w in palavras_orig:
+                linhas.append(f"[{w['inicio']:7.1f}] {w['palavra']}")
+            (pasta / "FALA.txt").write_text("\n".join(linhas), encoding="utf-8")
+        except Exception as e:
+            print(f"   [!] nao consegui gravar FALA.txt: {str(e)[:90]}")
         resumo.append(meta)
 
         # Limpa os intermediários DESTE clipe assim que ele termina — sem
