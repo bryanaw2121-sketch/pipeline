@@ -74,12 +74,14 @@ MAX_PAGINAS = 4
 # CADENCIA AINDA NAO DECIDIDA pro canal de comida. Estes horarios sao herdados
 # do outro canal e servem so' como ponto de partida — canal novo tem alcance
 # diferente, e copiar cadencia sem medir foi explicitamente desaconselhado.
-SLOTS_SP = [(8, 15), (11, 33), (16, 27), (19, 3), (20, 50)]
+# 29/08/2026: 4 posts/dia nos DOIS canais, decisao do Bryan. Saiu o slot das
+# 20:50, o par mais apertado da grade (1h47 depois das 19:03).
+SLOTS_SP = [(8, 15), (11, 33), (16, 27), (19, 3)]
 # Teto DURO de posts por dia (SP), contando o que ja' foi enviado. A grade
 # sozinha nunca segurou o volume: 25/08 saiu com 8 posts e 26/08 com 11, ambos
 # acima dos 6 slots que existiam. Isso acontece porque um slot que ja' disparou
 # some de `scheduled`, e uma rodada seguinte do agendador enxerga o dia vazio.
-MAX_POR_DIA = 5
+MAX_POR_DIA = 4
 VARIACAO_MIN = 8      # minuto varia ±8 pra não parecer robô
 FUSO_SP_H = 3         # America/Sao_Paulo = UTC-3
 
