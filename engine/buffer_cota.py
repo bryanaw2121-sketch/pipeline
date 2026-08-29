@@ -17,14 +17,18 @@ pedia.
 
 COMO ESTE MÓDULO RESOLVE
 
-  - **Orçamento**: conta as requisições numa janela de 24h e RECUSA passar do
-    teto. Melhor a fila ficar desatualizada por algumas horas do que a conta
-    inteira travar por um dia.
+  - **Orçamento**: conta as requisições em DUAS janelas — 15 minutos e 24h — e
+    RECUSA passar de qualquer uma delas. Melhor a fila ficar desatualizada por
+    algumas horas do que a conta inteira travar por um dia.
   - **Cache**: estado da fila lido no máximo uma vez a cada `IDADE_CACHE_S`.
     Chamada seguinte dentro da janela reaproveita, sem tocar na rede.
 
-O teto é conservador de propósito. O limite real do Buffer não é documentado —
-só descobrimos que existe batendo nele.
+Os limites vieram do painel da API da conta do @modofuturo, lido em 29/08/2026.
+Esta conta é SEPARADA e o painel dela nunca foi aberto — ver o aviso em
+`TETO_24H` antes de confiar nos números.
+
+⚠️ O painel avisa que "Keys and Active Integrations share this limit": o uso do
+app do Buffer sai do mesmo bolo. Por isso a margem de 20%, e não zero.
 """
 from __future__ import annotations
 
@@ -35,12 +39,46 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 ARQ = RAIZ / "estado" / "buffer_cota.json"
 
-# Teto por janela de 24h. Chutado pra baixo: com 4 postagens/dia e o agendador
-# rodando depois de cada corte (~16 vezes/dia), 120 dá folga de sobra.
-TETO_24H = 120
+# ⚠️ ESTES TETOS FORAM MEDIDOS NA OUTRA CONTA, NÃO NESTA.
+#
+# O painel da API foi lido em 29/08/2026 na conta do @modofuturo:
+#
+#   janela      limite real   teto nosso   margem
+#   15 min          100           80         20%
+#   24 h            250          200         20%
+#   30 dias        3.000          --         (não vigiado; ver abaixo)
+#
+# O @cozinha.internacional usa uma conta do Buffer SEPARADA (decidido em
+# 28/08), com orçamento próprio — que é justamente o que impede um canal de
+# deixar o outro sem cota. Mas o painel dessa conta nunca foi aberto: se ela
+# estiver em outro plano, estes números estão errados para cá.
+#
+# Herdados de propósito mesmo assim, porque o teto anterior (120, chutado)
+# não tinha medição nenhuma por trás e ainda vigiava só uma das duas janelas.
+# Trocar chute por medição-de-conta-vizinha é melhora; não é verificação.
+#
+# PARA FECHAR: abrir o painel da API na conta do Cozinha e conferir os três
+# números. Se baterem, apagar este aviso.
+TETO_24H = 200
 JANELA_S = 24 * 3600
+
+# A janela de 15 minutos é a que de fato pega a gente, e o módulo não a vigiava.
+# O incidente de 25/08 foi lido como estouro de 24h, mas 288 chamadas/dia não
+# passam de 250 — o que estourou foi a rajada: a consulta de fila PAGINA, então
+# uma única reorganização dispara várias requisições em segundos.
+TETO_15MIN = 80
+JANELA_CURTA_S = 15 * 60
+
+# O teto de 30 dias (3.000) não é vigiado de propósito: 200/dia por 30 dias dá
+# 6.000, mas o uso real é de ~500/mês. Se algum dia encostar, é sintoma de laço,
+# e o lugar de pegar laço é a janela de 15 min, não a de um mês.
+
 # Quanto tempo o estado da fila é considerado fresco. A fila muda 4 vezes por
 # dia; 15 min é bem mais rápido que isso e já corta a maior parte das chamadas.
+#
+# ⚠️ Este cache também engana QUEM CONFERE. Em 29/08 a conferência da fila logo
+# depois de agendar devolveu "0 agendados" — era o cache de antes do
+# agendamento, não o Buffer. Verificação de fila precisa furar o cache.
 IDADE_CACHE_S = 15 * 60
 
 
@@ -72,8 +110,19 @@ def usadas() -> int:
     return len(_limpar(_ler())["chamadas"])
 
 
+def usadas_curta() -> int:
+    """Requisições nos últimos 15 minutos."""
+    corte = time.time() - JANELA_CURTA_S
+    return sum(1 for t in _limpar(_ler())["chamadas"] if t > corte)
+
+
 def restantes() -> int:
-    return max(0, TETO_24H - usadas())
+    """Quantas cabem AGORA, considerando as duas janelas.
+
+    É o mínimo das duas: de nada adianta ter folga no dia se a rajada dos
+    últimos 15 minutos já encostou no limite curto.
+    """
+    return max(0, min(TETO_24H - usadas(), TETO_15MIN - usadas_curta()))
 
 
 def registrar(n: int = 1) -> None:
@@ -85,9 +134,18 @@ def registrar(n: int = 1) -> None:
 
 
 def checar(n: int = 1) -> None:
-    """Levanta CotaEstourada se `n` requisições não couberem no orçamento."""
-    livre = restantes()
-    if livre < n:
+    """Levanta CotaEstourada se `n` requisições não couberem no orçamento.
+
+    As duas janelas são checadas separadamente porque a espera é MUITO
+    diferente: estourar a curta custa minutos, estourar a de 24h custa o dia.
+    Dizer qual das duas travou é o que permite decidir se vale esperar.
+    """
+    if TETO_15MIN - usadas_curta() < n:
+        raise CotaEstourada(
+            f"rajada curta demais: {usadas_curta()}/{TETO_15MIN} requisições "
+            f"nos últimos 15 minutos, pedido de {n}. Espere alguns minutos — "
+            f"esta janela vira rápido, e a fila agendada continua saindo.")
+    if TETO_24H - usadas() < n:
         raise CotaEstourada(
             f"orçamento da API do Buffer esgotado: {usadas()}/{TETO_24H} nas "
             f"últimas 24h, pedido de {n}. Espere a janela virar — a fila que "
@@ -112,7 +170,8 @@ def guardar_cache(estado: dict) -> None:
 def resumo() -> str:
     d = _limpar(_ler())
     idade = int(time.time() - d.get("cache_em", 0)) // 60 if d.get("cache") else None
-    txt = f"Buffer: {usadas()}/{TETO_24H} requisições nas últimas 24h"
+    txt = (f"Buffer: {usadas()}/{TETO_24H} requisições nas últimas 24h"
+           f" | {usadas_curta()}/{TETO_15MIN} nos últimos 15 min")
     if idade is not None:
         txt += f" | cache de {idade} min"
     return txt
