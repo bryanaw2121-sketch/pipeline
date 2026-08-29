@@ -97,6 +97,29 @@ TERMOS = {
 
 FRACOES = {"½": 0.5, "¼": 0.25, "¾": 0.75, "⅓": 1/3, "⅔": 2/3, "⅛": 0.125}
 
+# QUANTIDADE ESCRITA POR EXTENSO. Fala nao usa digito: o video do muffin abre
+# com "A POUND of breakfast sausage" e o da batata-doce diz "HALF A CUP of
+# black beans". As regras exigiam \d+, entao nada disso convertia — a receita
+# saia com "uma libra de linguica", que nao diz nada pro brasileiro.
+#
+# "half a" tem de vir antes de "a", senao "a" casa primeiro e sobra "half".
+POR_EXTENSO = [
+    ("half a", 0.5), ("half an", 0.5), ("a quarter of a", 0.25),
+    ("a third of a", 1/3), ("three quarters of a", 0.75),
+    ("one and a half", 1.5), ("a couple of", 2),
+    ("twelve", 12), ("eleven", 11), ("ten", 10), ("nine", 9), ("eight", 8),
+    ("seven", 7), ("six", 6), ("five", 5), ("four", 4), ("three", 3),
+    ("two", 2), ("one", 1), ("an", 1), ("a", 1),
+]
+
+# Unidades em PORTUGUES. Rede de seguranca: se algum texto chegar aqui ja'
+# traduzido (caminho literal, reprocessamento, legenda escrita a mao), a
+# medida ainda converte em vez de passar batido.
+UNIDADE_PT = {
+    "onca": "oz", "oncas": "oz", "libra": "lb", "libras": "lb",
+    "polegada": "inch", "polegadas": "inch",
+}
+
 
 def _sem_acento(t: str) -> str:
     return unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode()
@@ -152,9 +175,31 @@ def _ingrediente(resto: str) -> tuple[str | None, str | None, str]:
     return None, None, bruto
 
 
+def _numerar_extenso(t: str) -> str:
+    """Troca quantidade por extenso por digito, ANTES das regras de medida.
+
+    So' age quando vem colada numa UNIDADE — "a pound", "half a cup". Sem essa
+    trava, todo artigo "a" do texto viraria "1" e a narracao ficaria absurda
+    ("1 chicken breast that 1 friend gave me").
+    """
+    unidades = (r"(?:cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?"
+                r"|pounds?|inch(?:es)?|sticks?)")
+    for palavra, valor in POR_EXTENSO:
+        t = re.sub(rf"\b{palavra}\s+({unidades})\b",
+                   lambda m, v=valor: f"{_bonito(v)} {m.group(1)}",
+                   t, flags=re.I)
+    return t
+
+
 def converter(texto: str) -> tuple[str, list[str]]:
     """Devolve (texto convertido, lista de conversoes pra mostrar na tela)."""
     achados: list[str] = []
+    texto = _numerar_extenso(texto)
+    # Unidade em portugues -> a inglesa que as regras abaixo entendem.
+    for pt, en in UNIDADE_PT.items():
+        texto = re.sub(rf"(\d)\s*{pt}\b", rf"\1 {en}", texto, flags=re.I)
+        texto = re.sub(rf"(\d)\s*{pt.replace('c', 'ç')}\b", rf"\1 {en}",
+                       texto, flags=re.I)
 
     def volume(m):
         qtd = _num(m.group(1))
@@ -196,6 +241,24 @@ def converter(texto: str) -> tuple[str, list[str]]:
         achados.append(f"{int(f)}°F = {int(c)}°C")
         return f"{int(c)}°C"
     t = re.sub(r"(\d+)\s*°?\s*F\b", temperatura, t)
+
+    # "425 DEGREES", sem o F. E' como a pessoa FALA, e a regra acima exigia o
+    # F — entao forno nenhum convertia na narracao. O video da batata-doce diz
+    # "bake at 425 degrees" e saiu "425 graus" na dublagem.
+    #
+    # So' converte de 250 pra cima, e isso NAO e' cautela vaga: forno em
+    # Fahrenheit vive entre 300 e 450 (325, 350, 375, 400, 425), e em Celsius
+    # entre 160 e 220. Abaixo de 250 os dois se sobrepoem e nao da' pra saber
+    # qual e' — entao deixa quieto, igual ao fallback de grama.
+    def graus(m):
+        f = _num(m.group(1))
+        if f is None or f < 250:
+            return m.group(0)
+        c = (f - 32) / 1.8
+        c = round(c / 10) * 10 if c >= 100 else round(c)
+        achados.append(f"{int(f)} degrees = {int(c)}°C")
+        return f"{int(c)}°C"
+    t = re.sub(r"(\d+)\s*degrees?\b(?!\s*c)", graus, t, flags=re.I)
 
     def peso(m):
         q = _num(m.group(1)); u = m.group(2).lower()
