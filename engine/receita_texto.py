@@ -26,7 +26,15 @@ portugues.
 
 Escreva a receita para a descricao do post. Formato EXATO:
 
-<uma linha: rende quantas porcoes, e tempo total. Ex: "Rende 2 porcoes - 15 min">
+<A LINHA MAIS IMPORTANTE DE TODAS. E' a unica que aparece antes do "ver mais"
+do TikTok, junto com o titulo. Escreva o RESUMO DA RECEITA em uma linha:
+os 3 ou 4 ingredientes principais com as quantidades ja convertidas, mais a
+temperatura ou o tempo. Separe com "·". Ex:
+"2 ovos · 120 ml de leite · 180°C por 25 min"
+"500 g de farinha · 300 ml de agua · 2 h de descanso"
+Sem verbo, sem frase, sem enfeite. E' um cartao, nao uma apresentacao.>
+
+<uma linha: rende quantas porcoes e tempo total. Ex: "Rende 2 porcoes - 15 min">
 
 INGREDIENTES
 - item com quantidade
