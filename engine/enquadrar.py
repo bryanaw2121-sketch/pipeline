@@ -5,6 +5,65 @@ falando de lado. Roda em CPU numa boa (MediaPipe é leve).
 """
 import config
 
+
+# ---------------------------------------------------------------------------
+# GUARDA: falta de BIBLIOTECA nao pode passar por "video sem rosto"
+#
+# Em 30/08/2026 os cinco clipes do run #185 (@modofuturo) e os quatro do run
+# #14 (cozinha) sairam com crop fixo no centro. O motivo era o mesmo nos dois:
+#
+#     face tracking indisponivel (libEGL.so.1: cannot open shared object file)
+#
+# Os workflows instalavam so' o ffmpeg. O opencv importa, o mediapipe importa,
+# e a biblioteca grafica so' falta na hora de carregar — tarde demais pra
+# quem so' olha o resultado do run, porque isto aqui era um `[!]` e o run
+# terminava VERDE.
+#
+# O trabalho de enquadramento daquele dia (deteccao em tiles a partir de
+# 140 px, seguir a mesma pessoa em vez da maior face) nunca chegou a rodar
+# na nuvem. Foi medido na maquina local e afirmado sobre o runner.
+#
+# A distincao que a guarda faz:
+#
+#   video sem rosto  -> volta pro centro em silencio. E' legitimo, acontece
+#                       (a propria medicao do dia poe o piso em ~140 px).
+#   biblioteca faltando -> e' DEFEITO DE AMBIENTE. Local, avisa alto. Na
+#                       nuvem, DERRUBA o run: melhor perder 3 minutos de
+#                       runner do que publicar um dia inteiro de clipe mal
+#                       enquadrado sem ninguem saber.
+#
+# Desligavel com RASTREIO_OBRIGATORIO=0 pra quem quiser rodar de proposito
+# numa maquina sem as bibliotecas.
+# ---------------------------------------------------------------------------
+
+import os
+
+
+def _na_nuvem() -> bool:
+    return os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+
+
+def _obrigatorio() -> bool:
+    v = os.environ.get("RASTREIO_OBRIGATORIO")
+    if v is not None:
+        return v.strip().lower() not in ("0", "false", "nao", "no", "")
+    return _na_nuvem()
+
+
+def sem_biblioteca(erro) -> list:
+    """Chamado quando o rastreio falta por AMBIENTE, nao por falta de rosto."""
+    recado = (f"face tracking indisponivel ({erro}) — "
+              "o clipe sai com crop fixo no centro")
+    if _obrigatorio():
+        raise RuntimeError(
+            recado + ". Isto e' defeito de AMBIENTE, nao do video: falta "
+            "biblioteca grafica no runner (libEGL.so.1 / libGL.so.1). "
+            "Some 'libegl1 libgl1 libglib2.0-0t64' ao apt-get do workflow. "
+            "Pra rodar assim mesmo: RASTREIO_OBRIGATORIO=0.")
+    print(f"   [!] {recado}")
+    return []
+
+
 MAX_DEGRAUS = 60   # teto de mudanças de enquadramento por clipe
 
 
@@ -54,8 +113,7 @@ def trajetoria(clipe, largura: int, altura: int) -> list[tuple[float, float]]:
         from mediapipe.tasks import python as mp_python
         from mediapipe.tasks.python import vision
     except ImportError as e:
-        print(f"   [!] face tracking indisponível ({e}) — crop fixo no centro")
-        return []
+        return sem_biblioteca(e)
 
     if not _garantir_modelo():
         print("   [!] face tracking sem modelo — crop fixo no centro")
@@ -68,8 +126,7 @@ def trajetoria(clipe, largura: int, altura: int) -> list[tuple[float, float]]:
             min_detection_confidence=0.5,
         ))
     except Exception as e:
-        print(f"   [!] face tracking indisponível ({e}) — crop fixo no centro")
-        return []
+        return sem_biblioteca(e)
 
     cap = cv2.VideoCapture(str(clipe))
     if not cap.isOpened():

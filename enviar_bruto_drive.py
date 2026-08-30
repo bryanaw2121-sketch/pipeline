@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import config
+from engine.drive_query import aspas
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 CLIENT_SECRETS = config.RAIZ / "client_secrets.json"
@@ -52,7 +53,7 @@ def _servico(conta: str = "principal"):
 
 def _achar_ou_criar_subpasta(servico, pai_id: str, nome: str) -> str:
     def procurar():
-        q = (f"'{pai_id}' in parents and name = '{nome}' and "
+        q = (f"'{aspas(pai_id)}' in parents and name = '{aspas(nome)}' and "
              "mimeType = 'application/vnd.google-apps.folder' and trashed = false")
         return servico.files().list(
             q=q, fields="files(id, name, createdTime)",

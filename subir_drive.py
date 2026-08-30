@@ -25,6 +25,7 @@ import config
 import numeracao
 from engine import telegram
 from publicar_tiktok import legenda_do_clipe
+from engine.drive_query import aspas
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 CLIENT_SECRETS = config.RAIZ / "client_secrets.json"
@@ -132,7 +133,7 @@ def fila_pendente_drive() -> list[tuple[float, Path]]:
 def _achar_ou_criar_subpasta(servico, pai_id: str, nome: str) -> str:
     """Acha a subpasta pelo nome; cria se não existir — usado pra pasta do
     dia (ex: '26-07') dentro da pasta pai."""
-    q = (f"'{pai_id}' in parents and name = '{nome}' "
+    q = (f"'{aspas(pai_id)}' in parents and name = '{aspas(nome)}' "
          "and mimeType = 'application/vnd.google-apps.folder' and trashed = false")
     r = servico.files().list(q=q, fields="files(id, name)").execute()
     arquivos = r.get("files", [])

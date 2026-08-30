@@ -34,6 +34,7 @@ from collections import defaultdict
 
 import contas_drive
 import numeracao
+from engine.drive_query import aspas
 
 
 def _itens(servico, pasta_id: str) -> list[dict]:
@@ -70,7 +71,7 @@ def _achar_ou_criar_subpasta(servico, pai_id: str, nome: str) -> str:
     renomeia arquivo, e é o tipo de dependência que quebra a portabilidade
     sem dar nada em troca.
     """
-    q = (f"'{pai_id}' in parents and name = '{nome}' "
+    q = (f"'{aspas(pai_id)}' in parents and name = '{aspas(nome)}' "
          "and mimeType = 'application/vnd.google-apps.folder' and trashed = false")
     achados = servico.files().list(q=q, fields="files(id, name)").execute().get("files", [])
     if achados:

@@ -17,6 +17,7 @@ from pathlib import Path
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from engine.drive_query import aspas
 
 ESCOPO = ["https://www.googleapis.com/auth/drive"]
 
@@ -38,7 +39,8 @@ def main() -> None:
         nome = f"{pasta.name[:2]}_nota{meta.get('nota',0)}_{meta.get('titulo','')[:46]}.mp4"
         nome = nome.replace("/", "-")
         antigos = sv.files().list(
-            q=f"name='{nome}' and '{a.pasta}' in parents and trashed=false",
+            q=f"name='{aspas(nome)}' and '{aspas(a.pasta)}' in parents "
+              "and trashed=false",
             fields="files(id)").execute().get("files", [])
         for x in antigos:
             sv.files().delete(fileId=x["id"]).execute()
