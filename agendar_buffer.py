@@ -44,7 +44,7 @@ from pathlib import Path
 
 import requests
 
-from engine import buffer_cota as cota
+from engine import buffer_cota as cota, refeicao
 from engine import adiados, rejeitados
 
 API_BUFFER = "https://api.buffer.com/"
@@ -444,6 +444,14 @@ def main() -> None:
     print(f"{len(todos)} clipe(s) no manifesto, {len(fila)} ainda não agendado(s)\n")
 
     horarios = proximos_horarios(agendados, max(0, vagas), conhecidos)
+    # Casa a RECEITA com a HORA de comer: cafe da manha as 8h, almoco as 11h,
+    # jantar as 19h. Antes era zip puro, e o primeiro clipe pegava o primeiro
+    # slot sem olhar o que era — em 30/08 "3 Tacas de Cottage para o Cafe da
+    # Manha" estava agendado pras 16:27, com a refeicao escrita no titulo.
+    #
+    # Conservador de proposito: so' reordena o que a refeicao exigir, e clipe
+    # que nao casa com nada cai no comportamento antigo. Ver engine/refeicao.py.
+    fila = refeicao.casar(fila, horarios)
     enviados = 0
     for (chave, clipe), quando in zip(fila, horarios):
         if enviados >= vagas:
