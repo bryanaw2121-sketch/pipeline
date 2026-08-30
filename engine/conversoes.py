@@ -103,10 +103,16 @@ FRACOES = {"½": 0.5, "¼": 0.25, "¾": 0.75, "⅓": 1/3, "⅔": 2/3, "⅛": 0.1
 # saia com "uma libra de linguica", que nao diz nada pro brasileiro.
 #
 # "half a" tem de vir antes de "a", senao "a" casa primeiro e sobra "half".
+# A forma com "one" e' tao comum quanto a com "a": o Fit Men Cook diz "ONE
+# THIRD OF A CUP of mayonnaise". Sem ela, "a cup" casava sozinho, virava
+# 240 ml, e sobrava um "one third of" orfao — o corte saiu dizendo "um terco
+# de 240 ml de maionese".
 POR_EXTENSO = [
-    ("half a", 0.5), ("half an", 0.5), ("a quarter of a", 0.25),
-    ("a third of a", 1/3), ("three quarters of a", 0.75),
-    ("one and a half", 1.5), ("a couple of", 2),
+    ("half a", 0.5), ("half an", 0.5), ("a half", 0.5), ("one half of a", 0.5),
+    ("a quarter of a", 0.25), ("one quarter of a", 0.25),
+    ("a third of a", 1/3), ("one third of a", 1/3), ("two thirds of a", 2/3),
+    ("three quarters of a", 0.75), ("one and a half", 1.5),
+    ("a couple of", 2),
     ("twelve", 12), ("eleven", 11), ("ten", 10), ("nine", 9), ("eight", 8),
     ("seven", 7), ("six", 6), ("five", 5), ("four", 4), ("three", 3),
     ("two", 2), ("one", 1), ("an", 1), ("a", 1),
@@ -184,9 +190,17 @@ def _numerar_extenso(t: str) -> str:
     """
     unidades = (r"(?:cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?"
                 r"|pounds?|inch(?:es)?|sticks?)")
-    for palavra, valor in POR_EXTENSO:
+    # MAIS LONGO PRIMEIRO, sempre. Depender da ordem da lista foi o que deixou
+    # "one third of a cup" passar: "a" casava o "a cup" do fim e a frase
+    # inteira se perdia. Ordenar aqui torna a lista a prova de edicao futura.
+    for palavra, valor in sorted(POR_EXTENSO, key=lambda x: -len(x[0])):
+        # PRECISAO: nao use `_bonito` aqui. Ele arredonda pra exibicao, e este
+        # numero ainda vai ser MULTIPLICADO. Um terco virava "0,3" e 1/3 de
+        # xicara dava 72 ml em vez de 80; um quarto virava "0,2" e 1/4 de
+        # xicara de aveia dava 18 g em vez de 22. O arredondamento e' a ultima
+        # etapa, nunca uma etapa do meio.
         t = re.sub(rf"\b{palavra}\s+({unidades})\b",
-                   lambda m, v=valor: f"{_bonito(v)} {m.group(1)}",
+                   lambda m, v=valor: f"{v:.6g} {m.group(1)}",
                    t, flags=re.I)
     return t
 
@@ -259,6 +273,25 @@ def converter(texto: str) -> tuple[str, list[str]]:
         achados.append(f"{int(f)} degrees = {int(c)}°C")
         return f"{int(c)}°C"
     t = re.sub(r"(\d+)\s*degrees?\b(?!\s*c)", graus, t, flags=re.I)
+
+    # "AT 420", numero pelado — sem grau, sem F, sem "degrees". E' como o
+    # Will Tennyson fala: "roast for 25 to 30 minutes AT 420". Nem a regra do
+    # °F nem a de "degrees" pegam, e o corte saiu dizendo "a 420".
+    #
+    # Converter numero solto seria temerario, entao a regra e' estreita de
+    # proposito: precisa vir depois de "at", ter exatamente 3 digitos, e cair
+    # entre 250 e 550. Forno em Celsius nao chega a 250 na pratica de receita
+    # domestica, e "at 350" nesse contexto so' pode ser Fahrenheit.
+    def graus_pelado(m):
+        f = _num(m.group(1))
+        if f is None or not (250 <= f <= 550):
+            return m.group(0)
+        c = (f - 32) / 1.8
+        c = round(c / 10) * 10 if c >= 100 else round(c)
+        achados.append(f"{int(f)} (F implicito) = {int(c)}°C")
+        return f"{int(c)}°C"
+    t = re.sub(r"\bat\s+(\d{3})\b(?!\s*(?:°|degrees?|f\b|ml\b|g\b|graus))",
+               graus_pelado, t, flags=re.I)
 
     def peso(m):
         q = _num(m.group(1)); u = m.group(2).lower()
