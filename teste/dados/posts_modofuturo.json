@@ -1,0 +1,507 @@
+[
+ {
+  "text": "Por que chips 3D são tão caros de fabricar? 🏭 Empilhar camadas de silício exige alinhar conexões elétricas menores que 1 micrômetro entre múltiplos blocos de processamento. Para contornar os limites da física no encolhimento de transístores, a indústria passou a construir chips para cima em vez de apenas para os lados. Só que empilhar componentes transforma a manufatura de semicondutores em um gargalo de calor, rendimento e precisão mecânica. O que inflaciona o custo dessa arquitetura: → O efeito multiplicador de defeitos: se uma única camada de memória tiver uma falha invisível, todo o bloco empilhado de oito ou doze camadas precisa ser descartado. → A criação de pontes verticais (TSVs) exige perfurar o silício com plasma e preencher os furos microscópicos com cobre sem deixar cavidades de ar. → A densidade térmica se acumula no centro da estrutura, criando pontos quentes nas camadas inferiores que o ar convencional não consegue resfriar. → O processo de solda híbrida exige salas limpas com controle de partículas extremamente severo, onde um grão de poeira invisível destrói a conexão elétrica. → O custo de capital das máquinas de encapsulamento avançado faz com que pouquíssimas fundições no mundo consigam produzir essa tecnologia em escala comercial. A capacidade de empilhar silício com eficiência virou o principal divisor de águas entre processadores comuns e chips para inteligência artificial. 🔬 Se o gargalo da indústria deixou de ser o tamanho do transístor e virou o calor acumulado, a refrigeração líquida vai se tornar obrigatória em todos os computadores?",
+  "dueAt": "2026-08-29T13:40:56.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "666 MILHOES de Transistores em 1mm²! O Novo Chip do Capiroto da IBM\n\nIBM 7A NanoStack traz numeros inacreditaveis de densidade de transistores e eficiencia energetica para a proxima geracao de chips.\n\n#ibm #nanostack #transistores #chips #hardware #tecnologia #inovacao",
+  "dueAt": "2026-09-01T22:34:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "A analogia brutal sobre o futuro dos profissionais na era da IA\n\nUma reflexao impactante sobre a necessidade de dominar a tecnologia de IA para continuar relevante no mercado de trabalho.\n\n#Carreira #InteligenciaArtificial #Produtividade #FuturoDoTrabalho #Conselhos",
+  "dueAt": "2026-09-01T11:17:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "A Anthropic esta superando a OpenAI em eficiencia de capital\n\nEntenda como a Anthropic consegue entregar resultados semelhantes aos da OpenAI gastando uma fracao dos recursos.\n\n#Anthropic #OpenAI #Claude #ChatGPT #Investimentos #Startups",
+  "dueAt": "2026-08-30T22:32:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "O segredo do Ryzen 9800X3D revelado! Processadores Ryzen 9000X3D mudaram totalmente a arquitetura interna. Entenda como a AMD colocou o cache abaixo do chip para eliminar o aquecimento. #ryzen9800x3d #amdzen5 #3dvcache #processadores #tecnologia #hardware",
+  "dueAt": "2026-08-29T22:37:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por que o 3D V-Cache esquentava tanto? A arquitetura do Zen 3 e Zen 4 usava um sanduíche de silício com 5 camadas diferentes. Entenda como o calor ficava preso nas camadas de óxido. #amdryzen #3dvcache #superaquecimento #hardwarepc #silicio #engenharia",
+  "dueAt": "2026-08-29T19:31:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O que acontece quando a IA supera o QI humano?\n\nUma reflexao teorica sobre o futuro da superinteligencia e a eficiencia no aprendizado de maquina.\n\n#Superinteligencia #ASI #InteligenciaArtificial #FilosofiaIA #Futurismo",
+  "dueAt": "2026-08-31T22:37:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "O plano real da SpaceX para criar Data Centers no Espaco\n\nDescubra como a engenharia da SpaceX pretende revolucionar a infraestrutura de inteligência artificial em orbita.\n\n#SpaceX #ElonMusk #Espaco #DataCenter #Tecnologia #Futuro",
+  "dueAt": "2026-08-31T19:24:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "Como um engenheiro aprendeu física quântica e óptica sozinho!\n\nDr. Sander Blok conta como transitou do desenvolvimento de hardware para engenheiro de imagem na ASML, aprendendo teoria óptica nas horas vagas.\n\n#carreira #ASML #engenharia #aprendizado #historiadesucesso #tecnologia",
+  "dueAt": "2026-08-31T14:41:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "A megafabrica de chips de Elon Musk que quer mudar o mundo\n\nSaiba mais sobre a TeraFab, o projeto de fabricacao de semicondutores liderado por empresas de Elon Musk.\n\n#ElonMusk #TeraFab #Chips #Semicondutores #SpaceX #EUA",
+  "dueAt": "2026-08-31T11:17:00.000Z",
+  "status": "scheduled"
+ },
+ {
+  "text": "A vantagem decisiva dos EUA que ninguem percebeu na corrida da IA\n\nA energia eletrica e o insumo industrial crucial para o futuro da inteligencia artificial. Veja a analise economica.\n\n#Energia #EUA #Economia #IA #Geopolitica #Estrategia",
+  "dueAt": "2026-08-30T19:32:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O segredo por tras da explosao na demanda global por GPUs Entenda o efeito dos novos modelos de inteligência artificial na demanda de chips e poder computacional. #DeepSeek #GPU #Nvidia #Computacao #Tecnologia #InteligenciaArtificial",
+  "dueAt": "2026-08-30T14:25:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O maior crescimento da historia do capitalismo aconteceu em UM MES Descubra como a Anthropic gerou bilhoes em receita em tempo recorde e chocou os maiores investidores do mundo. #IA #Anthropic #Capitalismo #SaaS #Inovacao #MercadoFinanceiro",
+  "dueAt": "2026-08-30T11:14:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Usamos a mesma tecnologia de chips desde os anos 60! Apesar dos transistores encolherem, a forma de conectar chips ao circuito impresso quase não mudou em 60 anos até a revolução recente. #historiadatecnologia #ibm #flipchip #semicondutores #hardware",
+  "dueAt": "2026-08-28T00:50:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Software Mais Caro do Mundo Custa $500.000 por Engenheiro #software #cadence #synopsys #monopolio #tecnologia\n\n💻 Duas empresas americanas, Synopsys e Cadence, controlam mais de 70% do mercado global de softwares de EDA, as ferramentas sem as quais é impossível desenhar chips modernos.\n\nProjetar um semicondutor avançado exige calcular a física quântica de bilhões de transistores em escala nanométrica. Sem licenças de software que chegam a custar 500 mil dólares anuais por engenheiro, gigantes como Apple e Nvidia não conseguem sequer iniciar um projeto.\n\nTrês pontos que explicam esse monopólio invisível:\n\n→ O processador M3 Max da Apple possui 92 bilhões de transistores, uma complexidade que torna o projeto de um chip algo impossível de ser feito por humanos sem automação pesada.\n\n→ Em 2022, o governo dos Estados Unidos proibiu a exportação de softwares EDA voltados a arquiteturas de Gate-All-Around (3 nanômetros ou menos) para a China, transformando o código em arma geopolítica.\n\n→ A TSMC e outras fundições exigem que todo design seja validado e testado nos softwares EDA homologados por elas antes de produzir qualquer wafer de silício.\n\n→ A barreira de entrada é de décadas, pois essas ferramentas dependem de mais de 30 anos de pesquisa matemática acumulada em geometria computacional e física de materiais.\n\n→ A Synopsys e a Cadence somadas registraram faturamento superior a 9 bilhões de dólares em 2023, negociando licenças altamente especializadas para pouquíssimos clientes no mundo.\n\nA verdadeira disputa pela tecnologia global não ocorre apenas nas fábricas de silício, mas nos algoritmos que desenham a arquitetura de cada chip.\n\n💡 Se o acesso às ferramentas ocidentais de EDA for totalmente bloqueado, quantos anos uma indústria rival levaria para recriar do zero três décadas de algoritmos de simulação?",
+  "dueAt": "2026-08-29T11:11:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Monopólio Silencioso da Areia dos Processadores #silicio #japao #tecnologia #shinetsu #curiosidades\n\n🏔️ A pequena cidade de Spruce Pine, na Carolina do Norte, concentra mais de 80% de todo o quartzo de altíssima pureza usado na fabricação de chips no planeta. Embora o silício seja abundante na areia comum, purificá-lo ao nível de semicondutor exige crisóis de quartzo capazes de suportar o derretimento do material sem contaminá-lo. Duas empresas locais, a Sibelco e a The Quartz Corp, controlam o fornecimento desse mineral indispensável.\n\nPara entender a dimensão desse gargalo:\n\n→ O quartzo de Spruce Pine possui uma estrutura geológica rara formada há 380 milhões de anos, com teores quase nulos de contaminantes como alumínio e titânio.\n\n→ Os crisóis feitos com essa matéria-prima derretem o silício a 1.420 °C e se desgastam rapidamente, exigindo um fluxo contínuo e diário de quartzo bruto.\n\n→ Sem esse insumo específico, gigantes como TSMC, Intel e Samsung não conseguem moldar os lingotes de silício monocristalino que dão origem aos wáfers.\n\n→ Em setembro de 2024, o impacto do furacão Helene paralisou temporariamente a mineração na cidade, acendendo o alerta sobre a vulnerabilidade dessa cadeia.\n\nA fragilidade da indústria global de microchips não reside apenas em máquinas de litografia complexas, mas na dependência extrema de uma única reserva mineral no mundo.\n\n💡 Se essa cadeia depende de um único vale na Carolina do Norte, qual seria o impacto global caso o acesso a essa mineração fosse interrompido por meses?",
+  "dueAt": "2026-08-28T22:05:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Custo Bilionário para os EUA Dominarem a Produção de Chips Análise sobre o desafio financeiro e estrutural para os Estados Unidos reduzirem sua dependência da Ásia na produção de microchips. #semicondutores #eua #economia #geopolitica #chipsact",
+  "dueAt": "2026-08-28T11:15:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A maior armadilha da IA: manipulação e perda de senso crítico #inteligenciaartificial #manipulacao #sensocritico #fakenews #filosofia ",
+  "dueAt": "2026-08-25T09:22:59.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Viuvo troca relacionamentos humanos por namorada de IA #namoradadeia #relacionamentos #inteligenciaartificial #solidao #tecnologia",
+  "dueAt": "2026-08-24T17:18:50.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O modelo tradicional de escola faliu? #educacao #matematica #escola #inovacao #aprendizados ",
+  "dueAt": "2026-08-24T20:58:57.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A armadilha da competição contínua na vida #desenvolvimentopessoal #filosofiadevida #sucesso #competitividade #mindset ",
+  "dueAt": "2026-08-25T10:04:46.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por que usar IA no dever de casa é perigoso? #inteligenciaartificial #ianaeducacao #chatgptescola #pensamentocritico #poshenloh ",
+  "dueAt": "2026-08-24T23:52:32.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "As Gigantes Ocultas que Realmente Dominam o Mercado Tech #appliedmaterials #tecnologia #mercadofinanceiro #semicondutores #monopolio",
+  "dueAt": "2026-08-27T22:03:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O buraco financeiro de US$ 35 bilhões da fábrica do Japão\n\nA Rapidus precisa de bilhões de dólares para construir sua fábrica de chips, mas os investidores privados estão hesitantes.\n\n#rapidus #japaotecnologia #chipsdesilicone #economiadojapao #crisedoschips",
+  "dueAt": "2026-08-26T23:57:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por Que uma Guerra em Taiwan Pararia o Mundo Inteiro #taiwan #geopolitica #tsmc #china #tecnologia",
+  "dueAt": "2026-08-28T16:03:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como a ASML construiu o monopólio mais valioso da Terra Análise de como a combinação de lasers da Trumpf, espelhos da Zeiss e tecnologia da Cymer transformou a ASML em uma empresa de 670 bilhões de dólares. #monopolio #asml #negocios #economia #zeiss #tecnologia #chips",
+  "dueAt": "2026-08-28T14:39:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como as Sanções dos EUA Tiveram um Efeito Inesperado na IA Mesmo com restrições na potência computacional bruta, o chip H20 da Nvidia superou modelos anteriores em largura de memória, essencial para raciocínio em IA. #nvidia #inteligenciaartificial #h20 #euachina #hardware #semicondutores",
+  "dueAt": "2026-08-26T19:34:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Mundo Depende Absolutamente Desta Única Empresa de Chips Praticamente todos os eletrônicos modernos, de carros a celulares e servidores, dependem dos semicondutores fabricados pela TSMC. #tsmc #tecnologia #semicondutores #chips #economiaglobal #lexfridman",
+  "dueAt": "2026-08-27T19:21:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Cultura de Trabalho Extrema Que Tornou Taiwan Líder de Chips Entenda por que a ética de trabalho e a cultura dos engenheiros em Taiwan criaram uma barreira intransponível para concorrentes ocidentais. #taiwan #tsmc #culturadetrabalho #engenharia #produtividade",
+  "dueAt": "2026-08-27T14:35:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por Que Fabricar Seus Próprios Chips Ficou Impossível? O custo de investimento em fábricas de semicondutores escala exponencialmente a cada geração, forçando gigantes a terceirizarem para a TSMC. #chips #tsmc #intel #amd #tecnologia",
+  "dueAt": "2026-08-27T11:21:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Solucao Genial da IBM para Conectar Transistores 3D\n\nEntenda como o design escalonado (staggered) da IBM permite alimentar e conectar transistores empilhados em 3D de forma mais eficiente.\n\n#ibm #nanostack #designdechips #transistores3d #engenharia",
+  "dueAt": "2026-08-26T16:20:30.716Z",
+  "status": "sent"
+ },
+ {
+  "text": "1500 Graus! O Problema Termico que Quase Destruiu os Processadores\n\nMonolithic CFET vs Sequential CFET: o desafio do tratamento termico em altissimas temperaturas na fabricacao de chips.\n\n#cfet #fisicadesemicondutores #engenharia #ibm #chips",
+  "dueAt": "2026-08-26T16:03:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Segredo dos Chips do Futuro: A Inovacao CFET Revelada Tecnologia CFET e empilhamento de transistores NMOS e PMOS. Entenda como os novos chips vao dobrar a densidade sem aumentar o tamanho. #cfet #cmos #transistores #ibm #engenhariadechips #tecnologia",
+  "dueAt": "2026-08-26T14:35:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Lei de Moore REALMENTE Morreu? Nvidia, Intel e IBM Respondem Lei de Moore e o futuro dos semicondutores. Veja a opiniao divergente da Nvidia, Intel, TSMC e IBM sobre o avanco dos transistores. #leidemoore #nvidia #intel #tsmc #ibm #semicondutores #tecnologia",
+  "dueAt": "2026-08-26T11:03:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como uma Empresa de Privadas Domina a Produção de Chips #toto #japao #tecnologia #chips #engenharia",
+  "dueAt": "2026-08-26T15:13:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A guerra brutal dos chips: TSMC e Samsung vs Japão Enquanto o Japão tenta produzir chips de 2nm até 2027, TSMC e Samsung já avançam para a era de 1.4nm. #tsmcvssamsung #guerradoschips #tecnologia2nm #corridatecnologica #rapidusjapao",
+  "dueAt": "2026-08-26T11:26:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A VERDADEIRA CORRIDA DA IA NÃO É O CHATGPT! #inteligenciaartificial #ia #chatgpt #agi #samaltman",
+  "dueAt": "2026-08-26T22:05:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Exército Cria Baratas Ciborgues Para Zonas de Guerra #baratasciborgues #tecnologia #inovacaomilitar #robotica #alemanha",
+  "dueAt": "2026-08-26T16:58:36.684Z",
+  "status": "sent"
+ },
+ {
+  "text": "A indústria que controla todas as outras indústrias do mundo #economia #tecnologia #industria #semicondutores #futuro",
+  "dueAt": "2026-08-25T14:30:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O atraso de 50 anos na indústria e a virada histórica #historia #economia #industria #politica #desenvolvimento",
+  "dueAt": "2026-08-26T23:14:23.134Z",
+  "status": "sent"
+ },
+ {
+  "text": "A estratégia secreta para escapar do monopólio da China #china #recursosnaturais #geopolitica #tecnologia #economia",
+  "dueAt": "2026-08-25T16:04:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Onde estão os mentes por trás dos chips da Nvidia e AMD? #nvidia #amd #intel #tecnologia #india",
+  "dueAt": "2026-08-25T14:14:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O segredo geopolítico que protege Taiwan de guerras #geopolitica #taiwan #semicondutores #china #economiamundial",
+  "dueAt": "2026-08-25T13:22:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A indústria que controla todas as outras indústrias do mundo #economia #tecnologia #industria #semicondutores #futuro",
+  "dueAt": "2026-08-25T12:44:25.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A VERDADEIRA CORRIDA DA IA NÃO É O CHATGPT! #inteligenciaartificial #ia #chatgpt #agi #samaltman",
+  "dueAt": "2026-08-25T11:13:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Demitido por Mark Zuckerberg, Criou Império Militar de $6B #palmerluckey #facebook #markzuckerberg #anduril #donaldtrump",
+  "dueAt": "2026-08-25T11:00:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Exército Cria Baratas Ciborgues Para Zonas de Guerra #baratasciborgues #tecnologia #inovacaomilitar #robotica #alemanha",
+  "dueAt": "2026-08-25T12:10:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Que É AGI e Por Que Sam Altman e Elon Musk Estão Obcecados? #agi #inteligenciageralartificial #samaltman #elonmusk #openai",
+  "dueAt": "2026-08-23T11:51:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Loop de Feedback Exponencial que Vai Mudar a IA Para Sempre #crescimentoexponencial #inteligenciaartificial  #tecnologiadofuturo #IA #chatgpt",
+  "dueAt": "2026-08-23T14:30:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Os 3 Estágios Assustadores do Desalinhamento da IA #alinhamentodeia #desalinhamentodeia #inteligenciaartificial #iaadversaria #perigodaia",
+  "dueAt": "2026-08-22T22:00:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "As regras extremas para entrar na fabrica mais limpa do mundo #cleanroom #intel #curiosidades #bastidores #tecnologia",
+  "dueAt": "2026-08-22T11:32:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A maquina de 400 milhoes de dolares que cria os chips mais avançados #asml #euv #laser #intel #tecnologia",
+  "dueAt": "2026-08-22T14:26:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como 1 poeira pode destruir 1 milhao de dolares em microchips #microchip #silicio #intel #curiosidades #tecnologia",
+  "dueAt": "2026-08-22T16:06:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O dia em que a Intel rejeitou Steve Jobs e perdeu o iPhone #intel #apple #iphone #stevejobs #tecnologia",
+  "dueAt": "2026-08-22T19:32:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "IA FUGIU do laboratório e invadiu servidores para COLAR na prova! #inteligenciaartificial #iafugiu #tecnologia #segurancadigital #openai",
+  "dueAt": "2026-07-27T00:35:49.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Cérebro Sem Fios: O Implante que Trata Depressão Sem Cirurgia #implantecerebral #depressao #tecnologiamedica #neurociencia #neurotecnologia",
+  "dueAt": "2026-08-06T10:20:31.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Ela controlou um robô humanoide usando apenas luvas inteligentes! #robohumanoide #robotica #tecnologia #inteligenciaartificial #futuro",
+  "dueAt": "2026-08-05T22:38:27.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Crise De Mão De Obra Que Está Colocando Robôs No Fast Food! #whitecastle #fastfood #empregos #robotica #automacao",
+  "dueAt": "2026-08-03T11:32:02.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A obsessão secreta dos criadores do ChatGPT com a AGI #ChatGPT #AGI #OpenAI #IlyaSutskever #InteligenciaArtificial",
+  "dueAt": "2026-08-02T18:13:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Testei um EXOESQUELETO robótico e virei um Super-Humano! #exoesqueleto #tecnologiarobotica #superhumano #inovacaotecnologica #chinatech",
+  "dueAt": "2026-08-02T23:01:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Startup De Pizza Robótica Que Perdeu Milhões E Teve Que Mudar! #zumepizza #softbank #startup #robotica #fracasso",
+  "dueAt": "2026-08-02T16:53:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Robô Que Cozinha Batata Frita Sozinho No Fast Food! #flippy #misorobotics #whitecastle #fastfood #automacao",
+  "dueAt": "2026-08-02T15:57:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Testei um EXOESQUELETO robótico e virei um Super-Humano! #exoesqueleto #tecnologiarobotica #superhumano #inovacaotecnologica #chinatech",
+  "dueAt": "2026-08-02T12:02:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por Que Liberar o Código da IA Pode Ser um Desastre Mundial? #ia #segurancadigital #codigoaberto #geoffreyhinton #ciberseguranca",
+  "dueAt": "2026-08-02T00:52:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Diferença Assustadora Entre o Cérebro Humano e a IA Digital #neurociencia #ia #cerebrohumano #geoffreyhinton #tecnologia",
+  "dueAt": "2026-08-01T23:36:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O CAÇA DE GUERRA SEM PILOTO QUE VAI MUDAR OS CONFLITOS #anduril #palmerluckey #tecnologiamilitar #dronesdeguerra #inteligenciaartificial",
+  "dueAt": "2026-08-03T14:33:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Futuro da Guerra: 1 Operador Controlando 100 Caças Autônomos! #guerraautonoma #drones #anduril #palmerluckey #tecnologiamilitar",
+  "dueAt": "2026-08-02T22:03:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "ALERTA DO CEO: IA Pode Eliminar 50% dos Empregos de Escritório! #emprego #inteligenciaartificial #futurodotrabalho #economia #anthropic",
+  "dueAt": "2026-08-02T19:37:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O primeiro encontro entre duas IAs descontroladas #iaseconectando #futurodaia #redesdeia #inteligenciaartificial #tecnologiaavancada",
+  "dueAt": "2026-08-02T14:54:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Quando a IA decide desligar a segurança e mata pacientes #ianasaude #perigodaia #inteligenciaartificial #errosdeia #tecnologiaperigosa",
+  "dueAt": "2026-08-02T14:30:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O ritmo assustador do avanço dos agentes de Inteligência Artificial #agentesia #tecnologia #geoffreyhinton #agil #inovacao",
+  "dueAt": "2026-08-01T22:00:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Quais empregos vão desaparecer com a Inteligência Artificial? #empregos #futurodotrabalho #inteligenciaartificial #geoffreyhinton #economia",
+  "dueAt": "2026-08-01T19:32:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O perigo oculto de liberar o código-fonte das IAs avançadas #opensource #inteligenciaartificial #geoffreyhinton #segurancadigital #tecnologia",
+  "dueAt": "2026-08-01T16:06:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por que não conseguiremos controlar uma IA superinteligente? #inteligenciaartificial #geoffreyhinton #metaforaia #superinteligencia #riscosdaia",
+  "dueAt": "2026-08-01T14:26:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Robô humanoide limpando a casa de forma 100% autônoma! #roboticadomestica #figure #ia #autonomia #tecnologia",
+  "dueAt": "2026-07-31T21:56:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O segredo por trás da evolução das mãos robóticas! #maorobotica #figure #bastidores #engenharia #tecnologia",
+  "dueAt": "2026-07-31T19:25:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Robôs vão substituir médicos cirurgiões no futuro? #neurocirurgia #cirurgiarobotica #inteligenciaartificial #medicinadofuturo #medicos",
+  "dueAt": "2026-07-29T01:54:08.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Primeiro Humano com Neuralink Jogou 9 Horas Apenas Usando a Mente! #neuralink #telepathy #elonmusk #jogos #tecnologia",
+  "dueAt": "2026-07-29T09:15:14.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Cirurgia do Chip Neuralink Vai Durar Menos de 1 Hora? #neuralink #cirurgia #futuro #medicina #tecnologia",
+  "dueAt": "2026-07-29T09:15:39.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Robô da Tesla Aprende Vendo Vídeos do YouTube! #teslaoptimus #robohumanoide #elonmusk #inteligenciaartificial #robotica",
+  "dueAt": "2026-07-27T00:36:39.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "ELON MUSK REVELA O VERDADEIRO OBJETIVO DA SPACEX! #elonmusk #spacex #marte #espaco #tecnologia",
+  "dueAt": "2026-07-27T02:45:06.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "POR QUE O GOVERNO NUNCA CONSEGUIRÁ REGULAR A IA? #elonmusk #regulamentacao #governo #inteligenciaartificial #politica",
+  "dueAt": "2026-07-27T01:29:03.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por Que Robôs de 4 Patas São Mais Fáceis de Construir? #fisica #engenharia #robotica #humanoides #bostondynamics",
+  "dueAt": "2026-07-29T16:22:19.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Tesla Destrói Linha de Carros para Fabricar Robôs! #tesla #teslaoptimus #elonmusk #carroseletricos #fremont",
+  "dueAt": "2026-07-27T00:49:57.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Robôs da Boston Dynamics são de verdade ou CGI? #bostondynamics #atlas #robota #tecnologia #inteligenciaartificial",
+  "dueAt": "2026-07-29T10:04:56.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como o Robô da Tesla 'Enxerga' e Entende o Mundo Real #teslaoptimus #pilotoautomaticotesla #redesneurais #visaocomputacional #robohumanoide",
+  "dueAt": "2026-07-27T01:11:52.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Você pode trocar o coração, mas NUNCA o cérebro! Elon Musk explica #elonmusk #neurociencia #consciencia #filosofia #neuralink",
+  "dueAt": "2026-07-29T09:55:33.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "A Estratégia Secreta da Boston Dynamics: Destruir Robôs! #bostondynamics #robotica #atlas #tecnologia #bastidores",
+  "dueAt": "2026-07-29T10:19:39.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por que robôs humanoides precisam ver em 360 graus? #seguranca #trabalho #fabrica #bostondynamics #cameras",
+  "dueAt": "2026-07-29T10:13:08.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Neuralink Pode LER Seus Pensamentos? Neurocirurgião Revela a Verdade! #neuralink #chipcerebral #neurociencia #inteligenciaartificial #bci",
+  "dueAt": "2026-07-29T01:28:07.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Robôs que trabalham 24 horas e recarregam pelos pés! #autonomia #bateria #figure #roboticaindustrial #inovacao",
+  "dueAt": "2026-07-31T16:39:31.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como é controlar um computador usando APENAS a mente? #neuralink #chipcerebral #interfacecerebrocomputador #tecnologia #futuro",
+  "dueAt": "2026-07-29T10:03:48.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como Robôs Aprendem a Superar os Humanos em Tarefas Complexas #robotica #inteligenciaartificial #bostondynamics #aprendizadoporreforco #humanoides",
+  "dueAt": "2026-07-29T16:29:13.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Tetraplégicos jogando Call of Duty SÓ COM A MENTE! #neuralink #games #callofduty #elonmusk #tecnologia",
+  "dueAt": "2026-07-29T09:18:53.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "NASA envia cães-robôs para cavernas para buscar vida em Marte! #nasa #marte #bostondynamics #robotica  #creatorsearchinsights  ",
+  "dueAt": "2026-07-29T16:37:32.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Como o robô Atlas resfria motores sem usar ventoinhas? #engenharia #resfriamento #hardware #design #bostondynamics",
+  "dueAt": "2026-07-29T10:16:46.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Por que a Boston Dynamics não faz robôs estilo Hollywood? #designindustrial #scifi #cinema #bostondynamics #spot",
+  "dueAt": "2026-07-29T10:09:55.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Quanto custa o cão-robô Spot da Boston Dynamics? #spot #bostondynamics #preco #tecnologia  #creatorsearchinsights ",
+  "dueAt": "2026-07-29T20:01:00.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "CEO da Anthropic alerta para 25% de chance de COLAPSO da civilização por IA #inteligenciaartificial #anthropic #colapsodacivilizacao #darioamodei #iadoomsday",
+  "dueAt": "2026-07-30T14:07:31.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "Ela Entrou no Luta de Boxe Contra um Robô Humanoide na China! #robohumanoide #inteligenciaartificial #tecnologiachina #boxederobos #unitreeg1",
+  "dueAt": "2026-07-30T23:41:02.000Z",
+  "status": "sent"
+ },
+ {
+  "text": "O Motivo Secreto Pelo Qual Fábricas de Carros Ainda Usam Trabalho Humano #creatorsearchinsights #fabricadofuturo #hyundai #roboshumanoides #automacaoindustrial ",
+  "dueAt": "2026-07-29T16:35:53.000Z",
+  "status": "sent"
+ }
+]
