@@ -76,12 +76,21 @@ MAX_PAGINAS = 4
 # diferente, e copiar cadencia sem medir foi explicitamente desaconselhado.
 # 29/08/2026: 4 posts/dia nos DOIS canais, decisao do Bryan. Saiu o slot das
 # 20:50, o par mais apertado da grade (1h47 depois das 19:03).
-SLOTS_SP = [(8, 15), (11, 33), (16, 27), (19, 3)]
+SLOTS_SP = [(8, 15), (11, 33), (16, 27), (19, 30)]
 # Teto DURO de posts por dia (SP), contando o que ja' foi enviado. A grade
 # sozinha nunca segurou o volume: 25/08 saiu com 8 posts e 26/08 com 11, ambos
 # acima dos 6 slots que existiam. Isso acontece porque um slot que ja' disparou
 # some de `scheduled`, e uma rodada seguinte do agendador enxerga o dia vazio.
 MAX_POR_DIA = 4
+# Intervalo MINIMO entre dois posts do mesmo dia, em horas. Ordem do Bryan em
+# 29/08/2026. E' regra DURA, verificada depois do sorteio da variacao — nao um
+# alvo que a grade tenta cumprir.
+#
+# A diferenca importa: com a grade sozinha, o par 16:27-19:30 da' 3h03, mas a
+# variacao de ±8 em cada ponta pode virar 2h47. Foi o que aconteceu no
+# primeiro agendamento de 29/08 (16:32 -> 19:22 = 2h50). Confiar na folga da
+# grade e' confiar num sorteio.
+INTERVALO_MIN_H = 3.0
 VARIACAO_MIN = 8      # minuto varia ±8 pra não parecer robô
 FUSO_SP_H = 3         # America/Sao_Paulo = UTC-3
 
@@ -276,6 +285,19 @@ def proximos_horarios(agendados: list[dict], quantos: int,
         if dh:
             ocupados.add(dh)
 
+    # Os INSTANTES exatos do que ja' esta' agendado. O conjunto `ocupados` so'
+    # guarda (dia, hora) e nao serve pra medir intervalo — 16:32 e 19:22 sao
+    # horas diferentes e mesmo assim distam 2h50.
+    instantes: list[datetime.datetime] = []
+    for p in agendados:
+        dh = _dia_hora(p)
+        if dh:
+            ocupados.add(dh)
+        if p.get("dueAt"):
+            instantes.append(
+                (datetime.datetime.fromisoformat(p["dueAt"].replace("Z", "+00:00"))
+                 - datetime.timedelta(hours=FUSO_SP_H)).replace(tzinfo=None))
+
     por_dia: dict[datetime.date, int] = {}
     for p in (conhecidos if conhecidos is not None else agendados):
         dh = _dia_hora(p)
@@ -296,6 +318,22 @@ def proximos_horarios(agendados: list[dict], quantos: int,
                 continue
             if por_dia.get(dia, 0) >= MAX_POR_DIA:
                 break
+            # INTERVALO MINIMO, verificado DEPOIS da variacao. Compara com o
+            # que ja' esta' no Buffer e com o que esta' sendo montado agora —
+            # os dois grupos existem no mesmo dia e nenhum sozinho basta.
+            vizinhos = [x for x in instantes + saida if x.date() == dia]
+            perto = [x for x in vizinhos
+                     if abs((cand - x).total_seconds()) < INTERVALO_MIN_H * 3600]
+            if perto:
+                # Empurra pra frente do vizinho mais tardio, em vez de
+                # descartar o slot: descartar deixaria buraco no dia sem
+                # necessidade.
+                cand = max(perto) + datetime.timedelta(hours=INTERVALO_MIN_H)
+                if cand.date() != dia or cand.hour >= 23:
+                    continue          # nao cabe mais hoje, tenta amanha
+                if any(abs((cand - x).total_seconds()) < INTERVALO_MIN_H * 3600
+                       for x in vizinhos):
+                    continue
             ocupados.add((dia, h))
             por_dia[dia] = por_dia.get(dia, 0) + 1
             saida.append(cand)
