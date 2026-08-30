@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 import config
-from engine import (midia, selecao, transcricao, legendas, render, traducao, abertura,
+from engine import (midia, selecao, transcricao, legendas, render, traducao, abertura, fala,
                     dublagem, status, ancoragem, pos_producao, voz_clonada, suavizar)
 
 # console do Windows costuma abrir em cp1252, que não tem caractere "→"
@@ -204,6 +204,15 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
         # versao traduzida — e o que alimenta o FALA.txt la embaixo.
         palavras_orig = list(ps)
         segmentos = None
+
+        # GUARDA DE CLIPE MUDO. Antes de qualquer coisa cara (traducao,
+        # dublagem, render), confirma que existe fala. Em 30/08 o corte da
+        # "AMAZING Dessert Compilation" saiu com 4,3s de narracao num clipe de
+        # 91s — formato *satisfying*, quase sem fala. Ver engine/fala.py.
+        e_mudo, motivo_mudo = fala.mudo(palavras_orig, dur_final)
+        if e_mudo:
+            print(f'      [!] descartado "{c.get("titulo","")[:40]}": {motivo_mudo}')
+            continue
 
         # GUARDA DE ABERTURA ORFA. A fonte e' compilacao: se o corte comeca
         # numa frase que se apoia na receita ANTERIOR, o espectador chegou
