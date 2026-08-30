@@ -44,6 +44,10 @@ ANCORAS = [
     "em seguida", "de volta", "agora que", "depois disso",
     "como eu disse", "como falei", "aquele", "aquela", "esse ai",
     "novamente", "de novo", "outra vez",
+    # "os NOSSOS graos-de-bico" pressupoe que voce viu a gente fazer. Achado
+    # em 30/08 num corte que passou pela primeira versao desta guarda: a
+    # frase era longa o bastante pra escapar do piso de palavras.
+    "nossos", "nossas", "nosso ", "nossa ",
 ]
 
 # Ordinal apontando pra fora do trecho: "para a SEGUNDA combinacao" pressupoe
@@ -66,6 +70,42 @@ def primeira_frase(palavras: list[dict], limite: int = 30) -> str:
     txt = " ".join((p.get("palavra") or "") for p in (palavras or [])[:limite])
     corte = re.split(r"[.!?]", txt, maxsplit=1)
     return (corte[0] if corte else txt).strip()
+
+
+# Fala de ENCERRAMENTO do canal-fonte. Um corte feito so' disso nao e' receita
+# nenhuma — e ainda divulga o site e o podcast de outra pessoa.
+#
+# Achado em 30/08/2026: o corte "Dica de Ouro para Guardar suas Marmitas" era
+# o outro inteiro do Fit Men Cook — "clique no botao de curtir, se inscrever
+# no canal... confira o nosso podcast... o endereco e' thetabletalks.com...
+# tchau, pessoal!".
+#
+# O PROMPT_RECEITA ja' proibia ("nao inclua se inscreva, resumo do que foi
+# dito ou qualquer fala de encerramento") e o modelo produziu assim mesmo.
+# Prompt pede, guarda mede.
+ENCERRAMENTO = [
+    "se inscrever", "se inscreva", "clicar no botao", "clique no botao",
+    "botao de curtir", "ative o sininho", "ativar o sininho",
+    "link na descricao", "nosso podcast", "confira tambem",
+    "ate a proxima", "tchau, pessoal", "tchau pessoal", "e isso por hoje",
+    "comente aqui embaixo", "nos vemos", "obrigado por assistir",
+]
+# Um "se inscreva" solto no meio de uma receita longa nao condena o corte; o
+# que condena e' o corte SER encerramento. Por isso conta ocorrencias e olha
+# a densidade, em vez de barrar na primeira.
+ENCERRAMENTO_MIN = 2
+
+
+def so_encerramento(palavras: list[dict]) -> tuple[bool, str]:
+    """(O corte e' so' o outro do canal-fonte?, motivo)."""
+    if not palavras:
+        return False, "sem transcricao, nada a checar"
+    txt = _limpo(" ".join((p.get("palavra") or "") for p in palavras))
+    achados = [m for m in ENCERRAMENTO if m in txt]
+    if len(achados) >= ENCERRAMENTO_MIN:
+        return True, ("corte e' o encerramento do canal-fonte: "
+                      + ", ".join(f'"{a}"' for a in achados[:4]))
+    return False, "sem marca de encerramento"
 
 
 def orfa(palavras: list[dict]) -> tuple[bool, str]:

@@ -214,6 +214,13 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
             print(f'      [!] descartado "{c.get("titulo","")[:40]}": {motivo_ab}')
             continue
 
+        # GUARDA DE ENCERRAMENTO. Corte feito so' do outro do canal-fonte nao
+        # e' receita e ainda divulga o site e o podcast de outra pessoa.
+        e_fim, motivo_fim = abertura.so_encerramento(palavras_orig)
+        if e_fim:
+            print(f'      [!] descartado "{c.get("titulo","")[:40]}": {motivo_fim}')
+            continue
+
         # guardrail de ritmo [PAPER]: acima de ~200 palavras/min a
         # compreensão cai (Weinstein-Shr & Griffiths). A decupagem não
         # acelera a fala, mas aumenta a densidade — vale medir e avisar.
