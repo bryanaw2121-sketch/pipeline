@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 import config
-from engine import (midia, selecao, transcricao, legendas, render, traducao,
+from engine import (midia, selecao, transcricao, legendas, render, traducao, abertura,
                     dublagem, status, ancoragem, pos_producao, voz_clonada, suavizar)
 
 # console do Windows costuma abrir em cp1252, que não tem caractere "→"
@@ -204,6 +204,15 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
         # versao traduzida — e o que alimenta o FALA.txt la embaixo.
         palavras_orig = list(ps)
         segmentos = None
+
+        # GUARDA DE ABERTURA ORFA. A fonte e' compilacao: se o corte comeca
+        # numa frase que se apoia na receita ANTERIOR, o espectador chegou
+        # agora e nao viu nada disso. Medido em 30/08: 6 dos 32 cortes ja'
+        # produzidos abriam assim. Ver engine/abertura.py.
+        e_orfa, motivo_ab = abertura.orfa(palavras_orig)
+        if e_orfa:
+            print(f'      [!] descartado "{c.get("titulo","")[:40]}": {motivo_ab}')
+            continue
 
         # guardrail de ritmo [PAPER]: acima de ~200 palavras/min a
         # compreensão cai (Weinstein-Shr & Griffiths). A decupagem não

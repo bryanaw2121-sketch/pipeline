@@ -176,6 +176,26 @@ ESTRUTURA DE UM CORTE DE RECEITA — as tres partes dentro do mesmo trecho:
    momento mais bonito do preparo (algo derretendo, dourando, sendo cortado).
    NUNCA comece com o cozinheiro se apresentando, falando "oi pessoal",
    explicando o que vai fazer, ou com tela de titulo. Corte DEPOIS disso.
+
+   ⚠️ A PRIMEIRA FRASE NAO PODE SE APOIAR NO QUE VEIO ANTES.
+   O video-fonte e' uma compilacao: quando voce corta no meio, o espectador
+   NUNCA VIU a receita anterior. Uma frase que se refere a ela nao significa
+   nada e confunde nos dois primeiros segundos, que e' onde a audiencia
+   decide ficar.
+
+   Nao comece com: "a MESMA frigideira", "TERMINAMOS o grao-de-bico", "EM
+   SEGUIDA vamos", "DE VOLTA ao fogo", "AGORA que ja' fizemos", "pro SEGUNDO
+   prato", "reserve ISSO", nem com uma palavra solta que era o fim da frase
+   anterior ("Abacate.", "Peito de frango!").
+
+   Teste antes de escolher o inicio: se a primeira frase contem "mesma",
+   "terminamos", "em seguida", "de volta", "agora que", "tambem" ou um
+   ordinal ("segunda", "terceira") apontando pra fora do trecho, ANDE PRA
+   FRENTE ate' a primeira frase que se sustenta sozinha.
+
+   Medido em 30/08/2026: de 32 cortes ja' produzidos, 6 (19%) abriam assim.
+   E o melhor video do canal ate' hoje (536 views) e' justamente o que abre
+   limpo, com beneficio: "Sustenta bastante e me mantem satisfeita".
 2. PREPARO: o passo que faz diferenca — a tecnica, o ingrediente inesperado,
    a quantidade que surpreende. Nao precisa da receita inteira; precisa da
    parte que a pessoa nao sabia.
