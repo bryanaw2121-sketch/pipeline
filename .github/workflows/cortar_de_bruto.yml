@@ -33,7 +33,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg libegl1 libgl1 libglib2.0-0t64
+      - run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg libegl1 libgl1 libglib2.0-0t64
+          # libGLESv2.so.2 — o mediapipe precisa dela e ela NAO vem
+          # com libegl1/libgl1. Sem isto o face tracking cai pro crop
+          # fixo no centro. Comando separado porque o nome do pacote
+          # muda entre versoes do Ubuntu; falhar aqui nao pode
+          # derrubar o run inteiro.
+          sudo apt-get install -y libgles2 || sudo apt-get install -y libgles2-mesa || true
 
       - run: pip install -r requirements.txt
 
