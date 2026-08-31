@@ -65,11 +65,17 @@ o nome não aparecer no original, aí sim use o papel ("o anfitrião", "o
 segundo convidado") como identificador, mas ainda assim com moderação —
 só quando o contexto imediato não deixar claro de quem se trata.
 
-TAMANHO: o texto reescrito vai ser falado no MESMO TEMPO que a fala
-original durava — mantenha o tamanho (contagem de palavras) parecido com o
-original, nem mais curto nem mais longo. Texto mais longo que o original
-força a dublagem a acelerar a fala pra caber no tempo, o que soa corrido e
-ruim.
+TAMANHO: {orcamento}o texto reescrito vai ser falado no MESMO TEMPO que a fala
+original durava. Texto mais longo força a dublagem a acelerar a fala pra
+caber no tempo, o que soa corrido e ruim.
+
+⚠️ COMO ENCURTAR SEM PERDER NADA: o que sai é REDUNDÂNCIA, nunca FATO.
+Corte primeiro: repetição da mesma ideia, conectivo longo, adjetivo
+decorativo, e a repetição do papel da pessoa quando o pronome já basta.
+NUNCA corte: número, MEDIDA, temperatura, tempo de forno, ingrediente, nome,
+marca, o passo de uma receita, nem a conclusão. Se depois de tirar toda a
+redundância o texto ainda passar do limite, ENTREGUE ASSIM MESMO — um texto
+um pouco longo é melhor que um texto que perdeu informação.
 
 LINGUAGEM MENOS CRUA: quando o assunto envolver violência, morte ou dano a
 pessoas, narre o FATO sem a palavra mais gráfica — prefira "o fim de milhares
@@ -112,7 +118,14 @@ REGRAS:
 Responda SOMENTE com o texto traduzido, sem aspas, sem comentário, sem markdown.
 
 Fala original:
-{texto}"""
+{texto}
+TAMANHO: {orcamento}o texto vai ser falado no MESMO TEMPO que a fala original
+durava. Texto mais longo força a dublagem a acelerar, o que soa corrido.
+
+⚠️ Encurtar é tirar REDUNDÂNCIA (repetição, cacoete, conectivo longo), nunca
+FATO. NUNCA corte medida, temperatura, tempo, ingrediente ou passo. Se não
+couber sem perder informação, ENTREGUE ASSIM MESMO.
+"""
 
 
 def dica_de_genero(genero: str | None) -> str:
@@ -139,7 +152,48 @@ def dica_de_genero(genero: str | None) -> str:
     return ""
 
 
-def _traduzir_texto(texto: str, prompt: str = PROMPT, genero: str | None = None) -> str:
+# Ritmo alvo da narracao, em palavras por minuto.
+#
+# MEDIDO no run #16 (31/08/2026, Make Butter do Chef Jean-Pierre):
+#     56 frases, narracao 292,2s pro clipe de 188,3s  -> acelerando 1,55x
+#     32 frases, narracao 164,4s pro clipe de 118,8s  -> acelerando 1,38x
+#
+# 1,55x e' praticamente o teto de 1,6x que o codigo chama de "robotico". O
+# texto ja' chegava longo do modelo e so' restava ao `atempo` esmagar o audio.
+#
+# 150 ppm e' ritmo de narracao de documentario em portugues. Nao e' teto
+# rigido: o prompt manda ENTREGAR ASSIM MESMO se nao couber sem perder
+# informacao. Numa receita, perder uma medida estraga o video inteiro.
+PALAVRAS_POR_MINUTO = 150
+
+
+def orcamento_de_palavras(duracao_s: float | None) -> str:
+    """A frase que entra no prompt dizendo quantas palavras cabem.
+
+    Vazia quando nao ha' duracao — e ai' o prompt fica identico ao de antes.
+    Falha ABERTA: clipe sem timing nao pode ficar sem narracao por isto.
+    """
+    if not duracao_s or duracao_s <= 0:
+        return ""
+    limite = int(duracao_s / 60.0 * PALAVRAS_POR_MINUTO)
+    if limite < 10:
+        return ""
+    return (f"o texto tem que caber em cerca de {limite} PALAVRAS "
+            f"(sao {duracao_s:.0f} segundos de video, e narracao boa em "
+            f"portugues tem ~{PALAVRAS_POR_MINUTO} palavras por minuto). ")
+
+
+def _formatar(prompt: str, texto: str, genero, duracao_s) -> str:
+    campos = {"texto": texto}
+    if "{dica_genero}" in prompt:
+        campos["dica_genero"] = dica_de_genero(genero)
+    if "{orcamento}" in prompt:
+        campos["orcamento"] = orcamento_de_palavras(duracao_s)
+    return prompt.format(**campos)
+
+
+def _traduzir_texto(texto: str, prompt: str = PROMPT, genero: str | None = None,
+                    duracao_s: float | None = None) -> str:
     # Converte medida ANTES de traduzir: o Gemini recebe a receita ja' em
     # grama e C e so' traduz o texto em volta. Deixar a conversao pra depois
     # da traducao daria ao modelo a chance de "ajudar" e desconverter — e a
@@ -162,8 +216,11 @@ def _traduzir_texto(texto: str, prompt: str = PROMPT, genero: str | None = None)
                     # comum não tem esse campo, então formatar com ele daria
                     # KeyError. Preenche só quando o prompt pede.
                     "contents": [{"parts": [{"text": (
-                        prompt.format(texto=texto, dica_genero=dica_de_genero(genero))
-                        if "{dica_genero}" in prompt else prompt.format(texto=texto)
+                        # Preenche SO' os campos que o prompt pede. Sao tres
+                        # prompts com campos diferentes: formatar com um campo
+                        # que o texto nao tem da' KeyError, e formatar sem um
+                        # que ele tem deixa o placeholder cru no pedido.
+                        _formatar(prompt, texto, genero, duracao_s)
                     )}]}],
                     "generationConfig": {"temperature": 0.3},
                 },
@@ -300,10 +357,23 @@ def traduzir_segmentos(palavras: list[dict], tamanho_janela_s: float = 4.0,
         # perguntou". Uma janela que pegou so' o "Allow" de "allow to cool"
         # virou a frase "Permitir." sozinha no fim do video.
         texto_completo = " ".join(p["palavra"] for p in palavras)
+        # A janela sai das PROPRIAS palavras — nao precisa mudar quem chama.
+        try:
+            dur = float(palavras[-1]["fim"]) - float(palavras[0]["inicio"])
+        except (KeyError, TypeError, ValueError, IndexError):
+            dur = None
         texto_novo = _traduzir_texto(
             texto_completo,
             prompt=PROMPT_NARRACAO if narrar else PROMPT_LITERAL,
-            genero=genero_falante if narrar else None)
+            genero=genero_falante if narrar else None,
+            duracao_s=dur)
+        if dur and dur > 0:
+            n = len(texto_novo.split())
+            ppm = n / (dur / 60.0)
+            alvo = int(dur / 60.0 * PALAVRAS_POR_MINUTO)
+            marca = "" if ppm <= 200 else "  [!] acima de 200 ppm"
+            print(f"      narracao: {n} palavras em {dur:.0f}s = "
+                  f"{ppm:.0f} palavras/min (alvo {alvo}){marca}")
         grupos = _agrupar(palavras, tamanho_janela_s)
         return _distribuir_texto_em_janelas(texto_novo, grupos)
 
