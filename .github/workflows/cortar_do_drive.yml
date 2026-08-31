@@ -151,20 +151,46 @@ jobs:
           rm -f td.json
 
 
-      - name: Mandar pros rascunhos do Buffer
+      # ⚠️ ATE' 31/08/2026 A COZINHA NAO PUBLICAVA. Este passo mandava os
+      # clipes pros RASCUNHOS do Buffer e parava ali — os outros quatro canais
+      # (no poisonb9/Modo-Futuro) tem `publicar_release` + `agendar_buffer`, e
+      # so' a cozinha ficava dependendo de alguem promover o rascunho a mao.
+      #
+      # E o rascunho nem servia pra revisar: o `previa_buffer` subia todo clipe
+      # com o nome do arquivo (`short_9x16.mp4`, igual pra todos) e apagava o
+      # anterior. Os TRES rascunhos do run #16 apontavam pro mesmo video.
+      #
+      # `continue-on-error`: publicar na Release e' conveniencia. Se falhar, o
+      # clipe ja' esta' no Drive e o run nao pode ser reprovado por isso.
+      - name: Publicar clipes numa Release (URL publica)
+        continue-on-error: true
+        env:
+          # GH_PAT, nao o GITHUB_TOKEN do runner: a release vive no repo
+          # media-assets, e o token automatico so' escreve NESTE repositorio.
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_REPO: ${{ github.repository_owner }}/media-assets
+          CANAL_ESPERADO: cozinha.importada
+        run: python -X utf8 publicar_release.py
+
+      # Enfileira o que couber, respeitando o teto do plano (10 agendados por
+      # canal). `continue-on-error` pelo mesmo motivo: o clipe ja' esta' no
+      # Drive e na Release, e um erro do Buffer nao reprova o corte.
+      - name: Enfileirar no Buffer
+        continue-on-error: true
         env:
           BUFFER_TOKEN: ${{ secrets.BUFFER_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           GITHUB_REPO: ${{ github.repository_owner }}/media-assets
-        run: |
-          find saida -name 'short_9x16.mp4' -print0 | while IFS= read -r -d '' v; do
-            python -X utf8 previa_buffer.py "$v" --titulo "$(basename "$(dirname "$v")")"
-          done
+          # A guarda confere o DESTINO REAL: aborta se o token abrir um canal
+          # diferente deste. Pega secret trocado, renomeado ou canal
+          # reconectado noutra conta.
+          CANAL_ESPERADO: cozinha.importada
+        run: python -X utf8 agendar_buffer.py
 
       - name: Avisar no Telegram
         if: always()
         run: |
-          if [ "${{ job.status }}" = "success" ]; then T="Corte de receita pronto — ja esta nos rascunhos do Buffer."
+          if [ "${{ job.status }}" = "success" ]; then T="Corte de receita pronto — ja esta na FILA do Buffer."
           else T="Corte de receita FALHOU: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; fi
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data-urlencode text="$T"
