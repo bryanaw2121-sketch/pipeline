@@ -77,3 +77,27 @@ if falhas:
     sys.exit(1)
 print("[ok] teste_registro_clipes: 6 nomes = 1 clipe, postagem na mao conta, "
       "conteudo diferente segue diferente")
+
+# ---- catalogo historico: anotado, mas NAO protegido ---------------------
+# ⚠️ O caso negativo aqui e' o que impede a confianca falsa: entrada de
+# catalogo nao pode se passar por entrada com hash. Se `tem_hash` respondesse
+# True pra ela, o relato diria "protegido" onde nao ha' protecao — e a
+# protecao que falta e' exatamente contra o estrago que originou o modulo.
+ch = reg.registrar_historico(titulo="Ensopado de Carne Suculenta com Tomate",
+                             canal="cozinha.internacional",
+                             postado_em="2026-08-29T23:00:00Z")
+if reg.tem_hash(ch):
+    print("  [x] entrada de catalogo se passou por entrada com hash"); sys.exit(1)
+if not reg.ja_postado(ch):
+    print("  [x] catalogo com data de postagem nao conta como postado"); sys.exit(1)
+if reg.tem_hash(sha) is not True:
+    print("  [x] entrada com sha de verdade foi tratada como catalogo"); sys.exit(1)
+r = reg.resumo()
+if r["com_hash"] != 2 or r["so_catalogo"] != 1:
+    print(f"  [x] resumo errado: {r}"); sys.exit(1)
+# rodar de novo nao duplica
+reg.registrar_historico(titulo="Ensopado de Carne Suculenta com Tomate",
+                        canal="cozinha.internacional")
+if reg.resumo()["total"] != 3:
+    print("  [x] catalogar duas vezes duplicou a entrada"); sys.exit(1)
+print("[ok] catalogo historico: anotado, contado, e NAO se passa por protegido")

@@ -160,3 +160,60 @@ def nao_postados(dias: int = 0) -> list[dict]:
         if idade >= dias:
             fora.append({"sha": sha, "idade_dias": idade, **e})
     return sorted(fora, key=lambda x: -x["idade_dias"])
+
+
+PREFIXO_SEM_HASH = "sem-hash:"
+
+
+def registrar_historico(*, titulo: str, canal: str, arquivo: str = "",
+                        url: str = "", postado_em: str = "",
+                        origem: str = "buffer") -> str:
+    """Cataloga o que existia ANTES do registro por hash, sem baixar arquivo.
+
+    Decisao do Bryan em 31/08/2026: "vamos do de agora pra frente, mas vamos
+    escrever tudo em uma lista ainda assim. Vamos ter isso catalogado."
+
+    ⚠️ ESTA ENTRADA NAO TEM HASH, E ISSO PRECISA FICAR VISIVEL. A chave e'
+    derivada do TITULO, com o prefixo `sem-hash:`. Titulo e' chave fraca — foi
+    exatamente ela que deixou seis posts da cozinha apontarem pro mesmo
+    arquivo. Uma entrada historica NAO oferece a protecao que o sha oferece, e
+    fingir que oferece seria pior que nao ter a entrada: daria confianca falsa
+    justamente onde a protecao e' menor.
+
+    O que ela DA': catalogo. Da' pra listar, contar, e casar por titulo com o
+    que o Buffer devolve. O que ela NAO da': garantia de que dois titulos
+    diferentes nao sao o mesmo video.
+
+    Clipe novo, que passa pelo `publicar_release`, entra com sha de verdade.
+    """
+    chave = PREFIXO_SEM_HASH + chave_titulo(titulo)
+    d = _ler()
+    e = d["clipes"].setdefault(chave, {
+        "arquivo": arquivo, "titulo": titulo, "canal": canal, "url": url,
+        "criado_em": postado_em or datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "sem_hash": True,
+        "postagens": [],
+    })
+    e["sem_hash"] = True
+    if postado_em and not any(p["quando"] == postado_em for p in e["postagens"]):
+        e["postagens"].append({"origem": origem, "quando": postado_em,
+                               "canal": canal, "detalhe": titulo[:70]})
+    _gravar(d)
+    return chave
+
+
+def tem_hash(chave: str) -> bool:
+    """A entrada e' protegida pelo conteudo, ou e' so' catalogo?"""
+    return not chave.startswith(PREFIXO_SEM_HASH)
+
+
+def resumo() -> dict:
+    """Quantos clipes, quantos com hash de verdade, quantos ja' postados."""
+    c = _ler()["clipes"]
+    return {
+        "total": len(c),
+        "com_hash": sum(1 for k in c if tem_hash(k)),
+        "so_catalogo": sum(1 for k in c if not tem_hash(k)),
+        "postados": sum(1 for v in c.values() if v["postagens"]),
+        "nunca_postados": sum(1 for v in c.values() if not v["postagens"]),
+    }
