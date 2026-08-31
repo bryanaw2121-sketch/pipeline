@@ -101,3 +101,25 @@ reg.registrar_historico(titulo="Ensopado de Carne Suculenta com Tomate",
 if reg.resumo()["total"] != 3:
     print("  [x] catalogar duas vezes duplicou a entrada"); sys.exit(1)
 print("[ok] catalogo historico: anotado, contado, e NAO se passa por protegido")
+
+# ---- o prefixo vem em DUAS formas --------------------------------------
+# ⚠️ O titulo catalogado da RELEASE traz data + indice + nota; o texto do
+# post no Buffer traz o titulo limpo. Ate' 31/08/2026 so' a forma da pasta
+# era removida, e os dois nunca casavam — a marcacao manual do Cookie da
+# Levain nao achou o clipe.
+pares = [("2026 08 31 03 nota84 Provando o Famoso Cookie da Levain Bakery",
+          "Provando o Famoso Cookie da Levain Bakery"),
+         ("01_nota92_Como fazer base e contorno", "Como fazer base e contorno"),
+         ("2026-08-31_04_nota81_Segredo para iluminar", "Segredo para iluminar")]
+for bruto, limpo in pares:
+    if reg.chave_titulo(bruto) != reg.chave_titulo(limpo):
+        print(f"  [x] nao casou: {bruto[:40]!r} x {limpo[:30]!r}"); sys.exit(1)
+
+# ⚠️ NEGATIVO: numero que faz PARTE do titulo nao pode ser comido. Comer
+# qualquer digito inicial faria "10 Ideias de Marmitas" deixar de casar
+# consigo mesmo — e ai' um clipe ja' postado voltaria a parecer novo.
+if reg.chave_titulo("10 Ideias de Marmitas Fit") != "10ideiasdemarmitasfit":
+    print("  [x] o numero legitimo do titulo foi comido"); sys.exit(1)
+if reg.chave_titulo("Cookie Gigante") == reg.chave_titulo("Cookie Pequeno"):
+    print("  [x] titulos diferentes viraram a mesma chave"); sys.exit(1)
+print("[ok] chave_titulo: release e Buffer casam, numero legitimo preservado")

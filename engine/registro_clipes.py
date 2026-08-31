@@ -66,8 +66,25 @@ def chave_titulo(texto: str) -> str:
     Tira o prefixo `NN_notaXX_` que o pipeline poe no nome da pasta: foi
     justamente ele que vazou pra dentro das legendas da cozinha.
     """
-    t = re.sub(r"^\d+_nota\d+_", "", (texto or "").strip())
-    t = t.split("\n")[0]
+    t = (texto or "").strip().split("\n")[0]
+    # ⚠️ O PREFIXO VEM EM DUAS FORMAS, e so' uma estava tratada.
+    #
+    #   pasta do pipeline   01_nota92_Como fazer base...
+    #   asset da release    2026-08-31_03_nota84_Provando o Famoso Cookie...
+    #                       (com os "_" virando espaco na hora de catalogar)
+    #
+    # Ate' 31/08/2026 so' a primeira forma saia. Resultado: o titulo
+    # catalogado da release NUNCA casava com o texto do post no Buffer — e a
+    # marcacao manual nao achava o clipe, que ficaria orfao pra sempre. Foi
+    # exatamente o que aconteceu ao tentar marcar o Cookie da Levain que o
+    # Bryan postou na mao.
+    #
+    # ⚠️ A data e' EXIGIDA no primeiro padrao e o "nota" no segundo. Comer
+    # qualquer numero inicial estragaria titulo legitimo: "10 Ideias de
+    # Marmitas Fit" viraria "Ideias de Marmitas Fit" e deixaria de casar
+    # consigo mesmo.
+    t = re.sub(r"^\d{4}[-\s]\d{2}[-\s]\d{2}[_\s]*", "", t)
+    t = re.sub(r"^\d+[_\s]*nota\s*\d+[_\s]*", "", t)
     t = unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", "", t.lower())
 

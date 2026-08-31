@@ -156,6 +156,18 @@ a que melhor descreve o corte:
 """ + _CAUDA_SAIDA.replace("{extra}", ""))
 
 
+# ⚠️ DEGUSTACAO NAO E' RECEITA — regra escrita em 31/08/2026, depois do erro.
+#
+# O run daquele dia escolheu dois momentos do mesmo video sobre a Levain
+# Bakery: um ensinando a assar o cookie gigante, e outro com as pessoas
+# PROVANDO o cookie comprado na loja. O segundo foi agendado, o Bryan viu e
+# apagou: "nao era um video sobre um preparo, era eles experimentando um
+# cookie de uma loja".
+#
+# ⚠️ E o corte nao tinha defeito nenhum. Comida na tela, apetite, fala boa,
+# duracao certa, unidade completa — passava em TODOS os criterios que
+# existiam. O criterio nao errou ao aplicar as regras; faltava a regra.
+
 # --------------------------------------------------------------- modo receita
 # O PROMPT acima foi desenhado pra entrevista: "frase de impacto", "pausa
 # natural da fala", climax numa ideia dita. Receita nao funciona assim — o
@@ -247,6 +259,12 @@ REGRAS DURAS:
   entregando ela inteira.
 - NAO escolha trecho onde o cozinheiro so' fala, sem comida na tela.
 - NAO escolha trecho de tela parada (titulo, lista de ingredientes escrita).
+- NAO escolha DEGUSTACAO, PROVA nem RESENHA: gente comendo e comentando o
+  sabor, visita a loja ou restaurante, "vamos ver se e' tao bom quanto
+  dizem". Este canal e' de PREPARO — quem assiste quer FAZER o prato, e um
+  video de alguem provando nao ensina nada. Ha' comida na tela, ha' apetite,
+  ha' fala boa: passa em todos os outros criterios e mesmo assim nao serve.
+  Se o video-fonte inteiro for degustacao, devolva ZERO momentos.
 - Os trechos NAO podem se sobrepor.
 
 CAMPO EXTRA obrigatorio neste modo, alem dos demais:
