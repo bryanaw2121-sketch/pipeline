@@ -1,0 +1,58 @@
+name: Conferir o que ja' foi ao ar (diario)
+
+# Fecha o ciclo do registro de clipes: le' os posts que o Buffer JA' PUBLICOU
+# no @cozinha.internacional e marca no registro quem foi ao ar.
+#
+# ⚠️ ESTE MOTOR CONFERE SO' O CANAL DELE. O registro vive dentro do
+# repositorio, entao sao dois registros — um aqui e um no Modo-Futuro. Se este
+# olhasse os 5 canais, todo post dos outros viraria "orfao", e orfao e' o
+# sinal de lista incompleta. Sinal que acusa sempre nao avisa de nada.
+#
+# ⚠️ O BUFFER NAO SABE DE TUDO. O que o Bryan posta na mao entra por
+# `conferir_postados.py --mao "<titulo>"`. A API de publicacao do TikTok foi
+# recusada em definitivo em 22/08/2026: nao ha' como perguntar o que esta' no
+# ar. O relato mostra quantos posts nao tem registro justamente pra essa
+# lacuna ficar visivel em vez de silenciosa.
+
+on:
+  schedule:
+    # 12:10 UTC = 09:10 em Sao Paulo, logo depois da conferencia do outro motor
+    - cron: "10 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: Conferir
+        env:
+          BUFFER_TOKEN: ${{ secrets.BUFFER_TOKEN }}
+        run: python -X utf8 conferir_postados.py
+
+      - name: Guardar o registro
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet registro_clipes.json 2>/dev/null; then
+            git add registro_clipes.json && git commit -m "registro: postagens conferidas" && git push
+          else
+            echo "registro inalterado"
+          fi
+
+      - name: Avisar no Telegram
+        if: always() && hashFiles('relato_postados.txt') != ''
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode text="$(cat relato_postados.txt)"

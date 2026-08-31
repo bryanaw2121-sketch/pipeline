@@ -37,6 +37,7 @@ from pathlib import Path
 import requests
 
 import config
+from engine import registro_clipes
 
 REPO = os.environ.get("GITHUB_REPO", "bryanaw2121-sketch/media-assets")
 API = "https://api.github.com"
@@ -218,6 +219,19 @@ def main() -> None:
             continue
         video = clipe / "short_9x16.mp4"
         nome = nome_de_asset(clipe, "short_9x16.mp4")
+
+        # ⚠️ FOI AQUI QUE O ESTRAGO NASCEU, NESTE REPOSITORIO. Ate' 31/08/2026
+        # todo clipe subia com o nome fixo `short_9x16.mp4` e cada upload
+        # sobrescrevia o anterior na release: um arquivo, sete nomes. A fila
+        # deste canal ficou com 6 posts, 6 titulos e 6 legendas apontando pro
+        # MESMO video — e um deles chegou a ir ao ar.
+        #
+        # O nome ja' foi consertado. O sha e' a defesa que nao depende do
+        # nome estar certo.
+        sha = registro_clipes.sha_do_arquivo(video)
+        if registro_clipes.ja_postado(sha):
+            print(f"  [pulado] {clipe.name[:50]} — ESTE VIDEO JA' FOI POSTADO")
+            continue
         try:
             url = enviar_asset(token, release, video, nome)
         except Exception as e:
@@ -235,7 +249,14 @@ def main() -> None:
             m = json.loads(pj.read_text(encoding="utf-8"))
         except Exception:
             m = {}
+        registro_clipes.registrar(sha, arquivo=nome,
+                                  titulo=str(m.get("titulo") or clipe.name),
+                                  canal="cozinha.internacional", url=url)
         novos[chave] = {"url": url, "nota": nota, "legenda": legenda,
+                        # ⚠️ O sha viaja no manifesto pro agendador poder
+                        # recusar por CONTEUDO. Sem ele a unica defesa e'
+                        # o texto — e foi o texto que falhou aqui.
+                        "sha": sha,
                         "fonte": m.get("fonte", ""),
                         "inicio_s": m.get("inicio_s"),
                         "titulo": m.get("titulo", ""),

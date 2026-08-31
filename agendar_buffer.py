@@ -44,7 +44,7 @@ from pathlib import Path
 
 import requests
 
-from engine import buffer_cota as cota, dedup, refeicao
+from engine import buffer_cota as cota, dedup, registro_clipes, refeicao
 from engine import adiados, rejeitados
 
 API_BUFFER = "https://api.buffer.com/"
@@ -429,6 +429,18 @@ def main() -> None:
     rejeitados_ = rejeitados.chaves()
 
     def cabe(v):
+        # ⚠️ RECUSA POR CONTEUDO, ANTES DE QUALQUER COMPARACAO DE TEXTO.
+        #
+        # Todas as guardas abaixo comparam TEXTO, e foi texto que falhou em
+        # 31/08/2026 NESTE canal: 6 posts na fila, 6 titulos e 6 legendas
+        # diferentes, um unico arquivo. Os textos eram de fato todos
+        # diferentes — nenhuma dedup de texto podia enxergar.
+        #
+        # Clipe antigo nao tem sha no manifesto: ai' esta guarda nao opina e
+        # as de texto seguem valendo.
+        sha = v.get("sha")
+        if sha and registro_clipes.ja_postado(sha):
+            return False
         k = _chave_texto(v.get("legenda") or v.get("titulo") or "")
         # Comparacao por PREFIXO, nao por igualdade: 88 dos 101 posts reais
         # tem titulo e descricao na mesma linha, e a chave deles vira
