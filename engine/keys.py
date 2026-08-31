@@ -12,7 +12,14 @@ class Rotador:
         chaves = []
         if v := os.getenv(prefixo):
             chaves.append(v.strip())
-        for i in range(2, 21):
+    # ⚠️ O TETO E' O NUMERO DE SLOTS QUE O RODIZIO ENXERGA, e ele ja' cortou
+    # chave viva: em 31/08/2026 os pools dos dois motores foram unificados
+    # (ordem do Bryan, "todas rodam para todos") e a cozinha passou a ter o
+    # slot 21 — que `range(2, 21)` NAO lia. A chave existia no repositorio,
+    # aparecia na listagem de secrets, e nunca entrava no rodizio.
+    #
+    # Ao acrescentar chave alem deste teto, suba o numero aqui TAMBEM.
+    for i in range(2, 41):
             if v := os.getenv(f"{prefixo}_{i}"):
                 chaves.append(v.strip())
         if not chaves:
