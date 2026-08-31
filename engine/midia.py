@@ -5,20 +5,60 @@ from pathlib import Path
 import config
 
 
+NL = chr(10)
+
+
 def _exige(bin_: str):
     if not shutil.which(bin_):
         raise RuntimeError(f"'{bin_}' não está no PATH. Rode setup_nitro5.ps1.")
 
 
-def roda(cmd: list[str], silencioso=True):
-    r = subprocess.run(
-        cmd,
-        stdout=subprocess.DEVNULL if silencioso else None,
-        stderr=subprocess.PIPE,
-        text=True, encoding="utf-8", errors="replace",
-    )
+# Teto de tempo de UMA invocacao de ffmpeg/ffprobe.
+#
+# POR QUE EXISTE, medido em 31/08/2026
+#
+# Os runs #188 e #189 morreram no teto de 6h do GitHub Actions. Nenhum dos
+# dois era lento: trabalharam 19,8 e 23,1 minutos e depois ficaram 5,52h e
+# 5,56h em SILENCIO ABSOLUTO — sem erro, sem traceback, sem OOM, com 109 GB de
+# disco livre. No fim o runner matou dois orfaos: `python` e `ffmpeg`.
+#
+# Sem timeout, um subprocesso travado prende o run inteiro ate' o teto. Foram
+# ~12h de runner queimadas numa noite, e o log nao diz onde parou.
+#
+# ⚠️ ISTO NAO CONSERTA A CAUSA. Troca "6h perdidas em silencio" por "erro em N
+# minutos, com a linha de comando e o stderr parcial no log". E' instrumento
+# de diagnostico, nao reparo — e enquanto a causa nao for achada, e' o que
+# transforma a proxima falha em informacao.
+TIMEOUT_PADRAO = 1800      # 30 min: um render longo cabe folgado
+TIMEOUT_SONDA = 120        # ffprobe so' le' metadado; 2 min ja' e' travamento
+
+
+class TravouError(RuntimeError):
+    """Subprocesso passou do teto de tempo. Ver TIMEOUT_PADRAO."""
+
+
+def roda(cmd: list[str], silencioso=True, timeout: int | None = None):
+    limite = TIMEOUT_PADRAO if timeout is None else timeout
+    try:
+        r = subprocess.run(
+            cmd,
+            stdout=subprocess.DEVNULL if silencioso else None,
+            stderr=subprocess.PIPE,
+            text=True, encoding="utf-8", errors="replace",
+            timeout=limite,
+        )
+    except subprocess.TimeoutExpired as e:
+        # A mensagem E' o produto aqui: e' a unica coisa que vai sobrar no log
+        # quando isto disparar. Comando INTEIRO, nao os 3 primeiros itens.
+        parcial = e.stderr or ""
+        if isinstance(parcial, bytes):
+            parcial = parcial.decode("utf-8", "replace")
+        raise TravouError(
+            f"TRAVOU: passou de {limite}s sem terminar."
+            + NL + f"comando: {' '.join(str(x) for x in cmd)}"
+            + NL + f"stderr parcial: {parcial[-1500:]}") from None
     if r.returncode != 0:
-        raise RuntimeError(f"falhou: {' '.join(cmd[:3])}...\n{(r.stderr or '')[-1500:]}")
+        raise RuntimeError(f"falhou: {' '.join(cmd[:3])}...{NL}{(r.stderr or '')[-1500:]}")
     return r
 
 
@@ -31,6 +71,7 @@ def tem_nvenc() -> bool:
         r = subprocess.run(
             ["ffmpeg", "-hide_banner", "-encoders"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=TIMEOUT_SONDA,
         )
         if "h264_nvenc" not in r.stdout:
             return False
@@ -41,6 +82,7 @@ def tem_nvenc() -> bool:
              "-f", "lavfi", "-i", "color=c=black:s=64x64:d=0.1",
              "-c:v", "h264_nvenc", "-f", "null", "-"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=TIMEOUT_SONDA,
         )
         return teste.returncode == 0
     except Exception:
@@ -95,6 +137,7 @@ def duracao(video: Path) -> float:
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "json", str(video)],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_SONDA,
     )
     return float(json.loads(r.stdout)["format"]["duration"])
 
@@ -104,6 +147,7 @@ def dimensoes(video: Path) -> tuple[int, int]:
         ["ffprobe", "-v", "error", "-select_streams", "v:0",
          "-show_entries", "stream=width,height", "-of", "json", str(video)],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_SONDA,
     )
     s = json.loads(r.stdout)["streams"][0]
     return int(s["width"]), int(s["height"])
@@ -117,6 +161,7 @@ def fps(video: Path) -> float:
         ["ffprobe", "-v", "error", "-select_streams", "v:0",
          "-show_entries", "stream=r_frame_rate", "-of", "json", str(video)],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_SONDA,
     )
     s = json.loads(r.stdout)["streams"][0]
     num, den = s["r_frame_rate"].split("/")
@@ -166,6 +211,7 @@ def detectar_silencios(arquivo: Path, limiar_db: float, dur_min: float
          "-af", f"silencedetect=n={limiar_db}dB:d={dur_min}",
          "-f", "null", "-"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_PADRAO,
     )
     saida = r.stderr or ""
     inicios = [float(x) for x in _SILENCIO_INI.findall(saida)]
@@ -262,7 +308,9 @@ def congelamento_s(fonte: Path, inicio: float, fim: float) -> float:
          # o normal cai pra 0,9s e o congelamento real continua em 8,3s —
          # afrouxar não custou sensibilidade, só tirou o falso positivo.
          "-vf", "freezedetect=n=-60dB:d=0.5", "-an", "-f", "null", "-"],
+        # trecho, nao arquivo inteiro: o teto curto e' o certo aqui
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_PADRAO,
     )
     saida = r.stderr or ""
     inicios = [float(m) for m in _FREEZE_START.findall(saida)]
@@ -298,6 +346,7 @@ def pular_congelamento_inicial(fonte: Path, inicio: float, fim: float,
          "-t", f"{min(max_ajuste + 1.0, fim - inicio):.3f}",
          "-vf", "freezedetect=n=-60dB:d=0.15", "-an", "-f", "null", "-"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_PADRAO,
     )
     saida = r.stderr or ""
     inicios = [float(m) for m in
@@ -334,6 +383,7 @@ def pular_congelamento_final(fonte: Path, inicio: float, fim: float,
          "-t", f"{janela:.3f}",
          "-vf", "freezedetect=n=-60dB:d=0.15", "-an", "-f", "null", "-"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=TIMEOUT_PADRAO,
     )
     saida = r.stderr or ""
     inicios = [float(m) for m in

@@ -235,9 +235,42 @@ def imagem_titulo(texto: str, largura: int, altura: int, pasta_tmp: Path) -> Pat
     return caminho
 
 
+def _teto_segundos(bruto) -> list:
+    """`-t <duracao do bruto>`, ou vazio se nao der pra medir.
+
+    POR QUE NAO BASTA O `-shortest`
+
+    Em 31/08/2026 o run #197 do OUTRO motor renderizou 1h36 de video para um
+    clipe de 91,8s: 144 mil quadros, a 3,23x, com `-shortest` presente no
+    comando. Com `-filter_complex` alimentado por um input `-loop 1` (a imagem
+    do titulo), o ffmpeg nao corta de forma confiavel.
+
+    ⚠️ ESTE MOTOR MONTA O COMANDO DO MESMO JEITO e nunca teve o `-t`. O
+    estrago nao aconteceu aqui ainda; podia.
+
+    ⚠️ Falha ABERTA: se o ffprobe nao souber a duracao, devolve lista vazia e
+    o comando fica como era. Um clipe sem teto e' ruim; um clipe que nao
+    renderiza por causa de uma sonda e' pior.
+
+    A folga de 2s existe porque o `-t` corta no tempo do OUTPUT, e a legenda
+    ou o audio dublado podem passar alguns quadros do fim do video.
+    """
+    try:
+        d = midia.duracao(bruto)
+    except Exception as e:
+        print(f"   [!] sem duracao do bruto ({str(e)[:60]}) — render sem -t")
+        return []
+    if not d or d <= 0:
+        return []
+    return ["-t", f"{d + 2:.3f}"]
+
+
 def _render(bruto: Path, filtro_video: str, ass: Path | None,
             destino: Path, audio_dublado: Path | None = None,
             img_titulo: Path | None = None, topo_titulo: int = 0) -> Path:
+    # ⚠️ TETO ABSOLUTO. Ver `_teto_segundos`: o `-shortest` sozinho
+    # nao segura quando ha' input com `-loop 1`.
+    teto = _teto_segundos(bruto)
     cadeia = filtro_video
     if ass is not None:
         # fontsdir aponta pra pasta de fontes do repositório. O .ass pede
@@ -267,7 +300,7 @@ def _render(bruto: Path, filtro_video: str, ass: Path | None,
                 "-map", "[v]", "-map", "1:a:0",
                 *_encoder(),
                 "-af", AUDIO_LOUDNORM,
-                "-c:a", "aac", "-b:a", "192k", "-shortest",
+                "-c:a", "aac", "-b:a", "192k", "-shortest", *teto,
                 "-pix_fmt", "yuv420p", "-movflags", "+faststart",
                 str(destino),
             ])
@@ -283,7 +316,7 @@ def _render(bruto: Path, filtro_video: str, ass: Path | None,
                 "-map", "[v]", "-map", "0:a:0",
                 *_encoder(),
                 "-af", AUDIO_LOUDNORM,
-                "-c:a", "aac", "-b:a", "192k", "-shortest",
+                "-c:a", "aac", "-b:a", "192k", "-shortest", *teto,
                 "-pix_fmt", "yuv420p", "-movflags", "+faststart",
                 str(destino),
             ])
@@ -297,7 +330,7 @@ def _render(bruto: Path, filtro_video: str, ass: Path | None,
             "-vf", cadeia, *_encoder(),
             "-map", "0:v:0", "-map", "1:a:0",
             "-af", AUDIO_LOUDNORM,
-            "-c:a", "aac", "-b:a", "192k", "-shortest",
+            "-c:a", "aac", "-b:a", "192k", "-shortest", *teto,
             "-pix_fmt", "yuv420p", "-movflags", "+faststart",
             str(destino),
         ])
