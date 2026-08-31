@@ -165,8 +165,14 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
                 c["fim_s"] = fim
         pasta = destino / f"{i:02d}_nota{int(c.get('nota', 0))}_{_limpar(c.get('titulo', ''))}"
         pasta.mkdir(parents=True, exist_ok=True)
+        # `genero_falante` no log: e' o sinal que vai decidir a VOZ do clipe
+        # (voz da Bruna pra fonte feminina), e ele nunca foi medido. Sem sair
+        # no log nao ha' como conferir depois se o Gemini acertou — o campo
+        # vive num post.json que morre com o runner.
+        _gen = c.get("genero_falante") or "(nao veio)"
         print(f"\n[4/5] clipe {i}/{len(clipes)}  {ini:.1f}s→{fim:.1f}s  "
-              f"nota {c.get('nota')}  \"{str(c.get('gancho',''))[:50]}\"")
+              f"nota {c.get('nota')}  falante: {_gen}  "
+              f"\"{str(c.get('gancho',''))[:50]}\"")
 
         status.etapa(nome_fonte, "cortando", c.get("titulo", ""), i, len(clipes))
         bruto = render.cortar(fonte, ini, fim, config.TRABALHO / f"bruto_{i:02d}.mp4")
