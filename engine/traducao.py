@@ -164,7 +164,30 @@ def dica_de_genero(genero: str | None) -> str:
 # 150 ppm e' ritmo de narracao de documentario em portugues. Nao e' teto
 # rigido: o prompt manda ENTREGAR ASSIM MESMO se nao couber sem perder
 # informacao. Numa receita, perder uma medida estraga o video inteiro.
-PALAVRAS_POR_MINUTO = 150
+# ⚠️ 113, e nao 150. MEDIDO no run #17 da cozinha (31/08/2026), contando as
+# palavras entregues contra a duracao REAL do audio sintetizado:
+#
+#     clipe A   221 palavras ->  98,2s  = 135 palavras/min
+#     clipe B   384 palavras -> 224,0s  = 103 palavras/min
+#     clipe C   205 palavras -> 120,2s  = 102 palavras/min
+#                                 media   113 palavras/min
+#
+# O 150 da primeira versao veio de "ritmo de narracao de documentario" — um
+# numero EDITORIAL, de referencia humana, nao do motor. O Chatterbox fala a
+# 113, entao pedir 150 e' pedir 32% de texto a mais do que cabe na janela.
+#
+# A prova de que o orcamento em si funcionava: no clipe B o modelo entregou
+# 384 palavras contra um orcamento de 379 — obedeceu — e mesmo assim o audio
+# ficou 1,47x maior que a janela. A peca estava certa; o alvo e' que estava
+# errado.
+#
+# ⚠️ NAO devolva pra 150 achando que soa mais natural. 150 e' o ritmo de um
+# NARRADOR HUMANO; este numero descreve o que a SINTESE faz. Sao coisas
+# diferentes, e foi confundi-las que causou o defeito.
+#
+# ⚠️ O ritmo VARIA por clipe (102 a 135 na mesma rodada), entao isto nunca
+# sera' exato. E' o centro da faixa, nao uma garantia.
+PALAVRAS_POR_MINUTO = 113
 
 
 def orcamento_de_palavras(duracao_s: float | None) -> str:
