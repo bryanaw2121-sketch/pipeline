@@ -24,3 +24,4 @@ google-auth-oauthlib>=1.2
 # Instale à parte, não vem por padrão:
 #   pip install faster-whisper
 #   pip install torch --index-url https://download.pytorch.org/whl/cu124
+pyflakes
