@@ -3,7 +3,7 @@
   "teto_em_voo": 2,
   "itens": [
     {
-      "estado": "disparado",
+      "estado": "pronto",
       "canal": "cozinha.internacional",
       "qtd": "3",
       "drive_file_id": "1kJR9FWib9uxq4KTJo8BPxIktWpq5JnXx",
