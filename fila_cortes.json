@@ -2,10 +2,38 @@
   "_leia": "Fila de cortes da cozinha. Ate' 01/09/2026 este motor NAO tinha fila: todo disparo era na mao. Enquanto os outros canais se reabasteciam sozinhos, a cozinha so' andava quando alguem lembrava dela — e foi por isso que ela chegou a 15h de folga enquanto o modofuturo tinha 50h.",
   "teto_em_voo": 2,
   "itens": [
-    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1kJR9FWib9uxq4KTJo8BPxIktWpq5JnXx", "nome": "How To Make Proper Croissants Completely By Hand"},
-    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1Z67fRrnXWgH-A8hk-bIKjn04lPLz0KYS", "nome": "5 Easy Dinners You Can Make in 30 Minutes or Less"},
-    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1186xW0uEwguvuxgWt3_GHCAmSlJhmxYB", "nome": "Make Butter in 10 Minutes - Chef Jean-Pierre"},
-    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1FLJW0nsSwoB5PklqzvuGw16uybepKLPn", "nome": "How to Make The Best Hot Chocolate Of All Time (4 ways)"}
+    {
+      "estado": "disparado",
+      "canal": "cozinha.internacional",
+      "qtd": "3",
+      "drive_file_id": "1kJR9FWib9uxq4KTJo8BPxIktWpq5JnXx",
+      "nome": "How To Make Proper Croissants Completely By Hand",
+      "quando": "2026-09-01T22:07:55+00:00",
+      "run_id": 33564717678
+    },
+    {
+      "estado": "disparado",
+      "canal": "cozinha.internacional",
+      "qtd": "3",
+      "drive_file_id": "1Z67fRrnXWgH-A8hk-bIKjn04lPLz0KYS",
+      "nome": "5 Easy Dinners You Can Make in 30 Minutes or Less",
+      "quando": "2026-09-01T22:08:00+00:00",
+      "run_id": 33564723956
+    },
+    {
+      "estado": "pendente",
+      "canal": "cozinha.internacional",
+      "qtd": "3",
+      "drive_file_id": "1186xW0uEwguvuxgWt3_GHCAmSlJhmxYB",
+      "nome": "Make Butter in 10 Minutes - Chef Jean-Pierre"
+    },
+    {
+      "estado": "pendente",
+      "canal": "cozinha.internacional",
+      "qtd": "3",
+      "drive_file_id": "1FLJW0nsSwoB5PklqzvuGw16uybepKLPn",
+      "nome": "How to Make The Best Hot Chocolate Of All Time (4 ways)"
+    }
   ],
   "_fora": {
     "1eBWC2OQJqhHMHN_tyJDsH6xURTE34J2-": "AMAZING Dessert Compilation — compilacao SEM FALA. O canal precisa de receita seguivel; compilacao nao ensina nada e o criterio de receita descartaria tudo depois de pagar o corte.",
