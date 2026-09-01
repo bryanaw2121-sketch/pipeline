@@ -1,0 +1,14 @@
+{
+  "_leia": "Fila de cortes da cozinha. Ate' 01/09/2026 este motor NAO tinha fila: todo disparo era na mao. Enquanto os outros canais se reabasteciam sozinhos, a cozinha so' andava quando alguem lembrava dela — e foi por isso que ela chegou a 15h de folga enquanto o modofuturo tinha 50h.",
+  "teto_em_voo": 2,
+  "itens": [
+    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1kJR9FWib9uxq4KTJo8BPxIktWpq5JnXx", "nome": "How To Make Proper Croissants Completely By Hand"},
+    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1Z67fRrnXWgH-A8hk-bIKjn04lPLz0KYS", "nome": "5 Easy Dinners You Can Make in 30 Minutes or Less"},
+    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1186xW0uEwguvuxgWt3_GHCAmSlJhmxYB", "nome": "Make Butter in 10 Minutes - Chef Jean-Pierre"},
+    {"estado": "pendente", "canal": "cozinha.internacional", "qtd": "3", "drive_file_id": "1FLJW0nsSwoB5PklqzvuGw16uybepKLPn", "nome": "How to Make The Best Hot Chocolate Of All Time (4 ways)"}
+  ],
+  "_fora": {
+    "1eBWC2OQJqhHMHN_tyJDsH6xURTE34J2-": "AMAZING Dessert Compilation — compilacao SEM FALA. O canal precisa de receita seguivel; compilacao nao ensina nada e o criterio de receita descartaria tudo depois de pagar o corte.",
+    "1gR-n3NkCgxpMJQhMa2rPmCTODrfncZVW": "Recreating Levain Cookies — ja' cortado, rendeu os 2 clipes do Cookie. Um deles o Bryan rejeitou por ser degustacao."
+  }
+}

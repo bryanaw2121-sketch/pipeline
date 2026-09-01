@@ -1,0 +1,137 @@
+name: Cortar a fila (2 por vez)
+
+# "Vamos de 2 em 2 ate' cortar tudo" — Bryan, 31/08/2026.
+#
+# ⚠️ O TETO DE 2 E' O REPARO DE UM ERRO MEDIDO. Naquele dia foram disparados
+# 10 runs em paralelo e NOVE morreram: as 40 chaves do Gemini secaram no meio.
+# As fontes ficaram intactas; o runner nao.
+#
+# ⚠️ POR QUE CRON E NAO O CLAUDE DISPARANDO: ele nao roda entre os turnos do
+# Bryan. "Vou disparando ao longo da noite" so' funciona se alguem ficar
+# cutucando — que e' exatamente o que ele nao quer.
+
+on:
+  # ⚠️ O GATILHO PRINCIPAL E' O FIM DE UM CORTE, nao o relogio.
+  #
+  # MEDIDO em 01/09/2026: o `schedule` deste arquivo pedia `*/30` e disparou
+  # de fato as 00:41, 06:00 e 10:54 — intervalos de ~5 HORAS. O cron do
+  # Actions e' best-effort e sofre atraso pesado; `*/30` e' um pedido, nao uma
+  # garantia. Com o teto de 2 em voo, isso deixava vaga livre por horas e a
+  # fila mal andava.
+  #
+  # `workflow_run` dispara assim que um corte termina — que e' exatamente o
+  # instante em que uma vaga abre. O cron fica como REDE, pro caso de o evento
+  # se perder ou de a fila parar com tudo falhando por cota.
+  workflow_run:
+    workflows: ["Cortar do Drive"]
+    types: [completed]
+
+  schedule:
+    # De 30 em 30 min. Um corte leva ~25 min, entao a passada seguinte quase
+    # sempre encontra vaga sem precisar esperar demais.
+    - cron: "*/30 * * * *"
+    # ⚠️ LOGO DEPOIS DO RESET DA COTA. A cota do Gemini e' DIARIA e vira a
+    # meia-noite do Pacifico — 07:00 UTC, 04:00 em Sao Paulo (medido em
+    # 01/09/2026: `GenerateRequestsPerDayPerProjectPerModel-FreeTier`).
+    #
+    # Sem esta entrada, a retomada depende do `*/30`, que o Actions atrasa de
+    # verdade: as passadas reais de hoje foram as 00:41, 06:00 e 10:54 —
+    # intervalos de ~5 HORAS. A fila poderia ficar parada metade da manha com
+    # cota cheia esperando.
+    #
+    # E o gatilho por `workflow_run` nao ajuda aqui: ele depende de um corte
+    # TERMINAR, e com tudo parado por cota nao ha' corte nenhum pra terminar.
+    - cron: "10 7 * * *"
+    - cron: "40 7 * * *"
+  workflow_dispatch:
+    inputs:
+      teto:
+        description: "MAXIMO de cortes em voo. A sonda de cota pode BAIXAR (2, ou 1), nunca subir"
+        required: false
+        default: "3"
+
+# ⚠️ Duas passadas ao mesmo tempo contariam as mesmas vagas e disparariam em
+# dobro — que e' o erro que este arquivo existe pra impedir.
+concurrency:
+  group: cortar-fila
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  puxar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Disparar ate' preencher o teto
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          # A sonda le' varias: uma chave so' nao decide nada (ver o
+          # cabecalho de `tem_cota` — foi assim que dois runs morreram).
+          # ⚠️ AS VINTE, NAO UMA AMOSTRA. Ate' 01/09/2026 este passo
+          # passava GEMINI_API_KEY_2.._5 — e os secrets NAO se chamam
+          # assim: sao GEMINI4..GEMINI19 mais GEMINI_API_KEY_1/2/3/20.
+          # A sonda enxergava 2 chaves de 20 e decidia o teto de corte
+          # com essa amostra. O mapa abaixo e' copiado do workflow de
+          # corte, que ja' estava certo — nao reescrito de memoria.
+          # ⚠️ Os tokens do Buffer entram aqui porque a ORDEM dos cortes
+          # depende de quanta fila cada canal ainda tem. Sem eles o script
+          # corta na ordem em que os itens foram escritos — foi assim que o
+          # @truque.importado, com 42h de folga, passou na frente de canais
+          # com 2h.
+          BUFFER_TOKEN: ${{ secrets.BUFFER_TOKEN }}
+          BUFFER_TOKEN_SEMANESTESIA: ${{ secrets.BUFFER_TOKEN_SEMANESTESIA }}
+          BUFFER_TOKEN_ATEFALHAR: ${{ secrets.BUFFER_TOKEN_ATEFALHAR }}
+          BUFFER_TOKEN_TRUQUEIMPORTADO: ${{ secrets.BUFFER_TOKEN_TRUQUEIMPORTADO }}
+          # ⚠️ MAPA COPIADO do workflow de corte deste mesmo repo, nao
+          # reescrito. Inventar nomes de secret foi o que deixou a sonda
+          # do outro motor enxergando 2 chaves de 20 e decidindo o teto
+          # de corte com essa amostra.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+          GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
+          GEMINI_API_KEY_5: ${{ secrets.GEMINI_API_KEY_5 }}
+          GEMINI_API_KEY_6: ${{ secrets.GEMINI_API_KEY_6 }}
+          GEMINI_API_KEY_7: ${{ secrets.GEMINI_API_KEY_7 }}
+          GEMINI_API_KEY_8: ${{ secrets.GEMINI_API_KEY_8 }}
+          GEMINI_API_KEY_9: ${{ secrets.GEMINI_API_KEY_9 }}
+          GEMINI_API_KEY_10: ${{ secrets.GEMINI_API_KEY_10 }}
+          GEMINI_API_KEY_11: ${{ secrets.GEMINI_API_KEY_11 }}
+          GEMINI_API_KEY_12: ${{ secrets.GEMINI_API_KEY_12 }}
+          GEMINI_API_KEY_13: ${{ secrets.GEMINI_API_KEY_13 }}
+          GEMINI_API_KEY_14: ${{ secrets.GEMINI_API_KEY_14 }}
+          GEMINI_API_KEY_15: ${{ secrets.GEMINI_API_KEY_15 }}
+          GEMINI_API_KEY_16: ${{ secrets.GEMINI_API_KEY_16 }}
+          GEMINI_API_KEY_17: ${{ secrets.GEMINI_API_KEY_17 }}
+          GEMINI_API_KEY_18: ${{ secrets.GEMINI_API_KEY_18 }}
+          GEMINI_API_KEY_19: ${{ secrets.GEMINI_API_KEY_19 }}
+          GEMINI_API_KEY_20: ${{ secrets.GEMINI_API_KEY_20 }}
+          GEMINI_API_KEY_21: ${{ secrets.GEMINI_API_KEY_21 }}
+        run: python -X utf8 cortar_fila.py
+
+      - name: Guardar o estado da fila
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet fila_cortes.json; then
+            git add fila_cortes.json
+            git commit -m "fila de cortes: marca o que foi disparado"
+            git push
+          else
+            echo "fila inalterada — nada a commitar"
+          fi
+
+      - name: Avisar no Telegram
+        if: always() && hashFiles('relato_cortes.txt') != ''
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode text="$(cat relato_cortes.txt)"
