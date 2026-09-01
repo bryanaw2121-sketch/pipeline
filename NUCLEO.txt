@@ -1,0 +1,49 @@
+# NUCLEO COMPARTILHADO — modulos que TEM de ser identicos em todo motor.
+#
+# A fonte canonica e' o `engine/` do poisonb9/Modo-Futuro, branch main. Todo
+# outro motor BAIXA daqui antes de cortar; ninguem edita copia local.
+#
+# POR QUE ISTO EXISTE, medido em 01/09/2026
+#
+# Tres reparos feitos de manha no Modo-Futuro nunca chegaram ao motor da
+# cozinha. Os runs #23 e #24 de la' bateram exatamente nos tres:
+#
+#     #23  morreu com "traducao falhou em todas as chaves: None"
+#          — a mensagem que eu ja' tinha consertado horas antes
+#     #24  morreu aos 91 min com 503, porque a espera era fixa em 2s
+#     ambos perderam o trabalho pronto dos clipes anteriores, porque o
+#          isolamento por clipe tambem so' existia do outro lado
+#
+# Custo: dois runs de ~90 minutos, e um dia inteiro de deriva silenciosa.
+#
+# ⚠️ O PROBLEMA NAO E' DUPLICAR CODIGO — E' DUPLICAR SEM SABER. Copia que
+# ninguem confere vira motor diferente, e o segundo repete erro ja' pago. O
+# `sincronizar_nucleo.py` confere na suite (deriva reprova) e aplica no
+# runner (o corte sempre roda o canonico).
+#
+# ⚠️ O QUE NAO ESTA' AQUI E' PORQUE DIVERGE DE VERDADE:
+#
+#   selecao.py       criterio de corte e' EDITORIAL por canal — receita, treino,
+#                    retorico. Unificar apagaria a diferenca que da' identidade
+#                    a cada canal.
+#   enquadrar.py     enquadramento de comida x pessoa falando sao problemas
+#                    diferentes.
+#   voz_clonada.py   ainda diverge por deriva, mas mexe em modelo pesado; entra
+#                    depois de um run verde dos dois lados.
+#   buffer_cota.py   os tetos foram medidos em CONTAS diferentes.
+#   traducao.py      a cozinha converte MEDIDAS no meio da traducao
+#                    (`conversoes.converter`) — e' o diferencial do canal, e o
+#                    prompt literal dela e' outro. Medido antes de decidir: a
+#                    divergencia nao era deriva.
+#   dublagem.py      a voz padrao e' por canal.
+#
+# Acrescentar modulo aqui e' barato. Tirar exige dizer POR QUE diverge — se a
+# razao nao couber em uma linha, provavelmente e' deriva disfarcada.
+
+engine/midia.py
+engine/numeros.py
+engine/dedup.py
+engine/rejeitados.py
+engine/adiados.py
+engine/registro_clipes.py
+engine/legenda_post.py

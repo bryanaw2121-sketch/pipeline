@@ -44,6 +44,18 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      # ⚠️ O NUCLEO VEM DO CANONICO A CADA RUN. Em 01/09/2026 tres reparos
+      # feitos no outro motor nunca chegaram aqui, e dois runs de ~90 min
+      # morreram exatamente neles. Baixar antes de cortar e' o que faz o
+      # conserto chegar sozinho, sem depender de alguem lembrar de portar.
+      #
+      # Falha ABERTA: sem rede, segue com a copia local — um corte que nao
+      # sai por causa da sincronizacao seria pior que um corte com codigo de
+      # ontem.
+      - name: Sincronizar o nucleo compartilhado
+        continue-on-error: true
+        run: python -X utf8 sincronizar_nucleo.py --aplicar
+
       
       - name: Baixar o bruto do Drive
         env:
