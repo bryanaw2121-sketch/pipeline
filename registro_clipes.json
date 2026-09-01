@@ -363,6 +363,12 @@
           "quando": "2026-08-31T23:28:04+00:00",
           "canal": "cozinha.internacional",
           "detalhe": "postado na mao pelo Bryan pra avaliar"
+        },
+        {
+          "origem": "buffer",
+          "quando": "2026-08-31T23:26:59.089Z",
+          "canal": "cozinha.internacional",
+          "detalhe": "Como Assar o Cookie Gigante Estilo Levain Perfeito"
         }
       ]
     },
@@ -373,7 +379,14 @@
       "url": "https://github.com/bryanaw2121-sketch/media-assets/releases/download/clipes-08-2026/2026-08-31_03_nota84_Provando_o_Famoso_Cookie_da_Levain_Bakery_em_Nova_York_short_9x16.mp4",
       "criado_em": "2026-08-31T23:15:29+00:00",
       "sem_hash": true,
-      "postagens": []
+      "postagens": [
+        {
+          "origem": "buffer",
+          "quando": "2026-08-31T23:23:54.180Z",
+          "canal": "cozinha.internacional",
+          "detalhe": "Provando o Famoso Cookie da Levain Bakery em Nova York"
+        }
+      ]
     }
   }
 }
