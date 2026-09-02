@@ -118,6 +118,14 @@ jobs:
           GEMINI_API_KEY_19: ${{ secrets.GEMINI_API_KEY_19 }}
           GEMINI_API_KEY_20: ${{ secrets.GEMINI_API_KEY_20 }}
           GEMINI_API_KEY_21: ${{ secrets.GEMINI_API_KEY_21 }}
+          # slots 22-27: chaves que ainda tinham cota em 02/09/2026,
+          # gravadas como NOVAS pra nao arriscar sobrescrever uma boa.
+          GEMINI_API_KEY_22: ${{ secrets.GEMINI_API_KEY_22 }}
+          GEMINI_API_KEY_23: ${{ secrets.GEMINI_API_KEY_23 }}
+          GEMINI_API_KEY_24: ${{ secrets.GEMINI_API_KEY_24 }}
+          GEMINI_API_KEY_25: ${{ secrets.GEMINI_API_KEY_25 }}
+          GEMINI_API_KEY_26: ${{ secrets.GEMINI_API_KEY_26 }}
+          GEMINI_API_KEY_27: ${{ secrets.GEMINI_API_KEY_27 }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
