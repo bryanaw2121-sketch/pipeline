@@ -395,7 +395,14 @@
       "url": "",
       "criado_em": "2026-09-01T21:59:06+00:00",
       "sem_hash": true,
-      "postagens": []
+      "postagens": [
+        {
+          "origem": "buffer",
+          "quando": "2026-09-01T11:13:00.000Z",
+          "canal": "cozinha.internacional",
+          "detalhe": "Massa de Croissant Francês: Ingredientes e Sovagem Correta"
+        }
+      ]
     }
   }
 }
