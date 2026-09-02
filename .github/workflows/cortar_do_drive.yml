@@ -113,6 +113,10 @@ jobs:
       - name: Cortar
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # ⚠️ O motor precisa saber DE QUAL BRUTO veio o clipe — sem
+          # isto o manifesto guarda so' 'fonte.mp4' e dois cortes do
+          # mesmo trecho viram dois posts.
+          ARQUIVO_ID: ${{ inputs.arquivo_id }}
           GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
           GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
           GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}

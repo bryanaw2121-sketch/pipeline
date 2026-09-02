@@ -9,7 +9,7 @@ Divisão de trabalho:
     Groq    -> legenda palavra a palavra (só nos clipes, nunca no vídeo cheio)
     ffmpeg  -> corta, enquadra no rosto, queima legenda, renderiza (NVENC)
 """
-import argparse, json, re, shutil, sys, time, unicodedata
+import argparse, json, os, re, shutil, sys, time, unicodedata
 from datetime import datetime
 from pathlib import Path
 
@@ -357,6 +357,13 @@ def processar(fonte: Path, qtd: int, usar_video: bool, idioma: str,
             # do Geoffrey Hinton, 26/07/2026) porque _origem.json não é sempre
             # escrito. Redundância aqui evita repetir.
             meta["url_origem"] = url_origem or ""
+            # ⚠️ QUAL BRUTO GEROU ESTE CLIPE. Ate' 02/09/2026 o manifesto guardava
+            # `fonte: fonte.mp4` — o nome que o RUNNER da' ao baixar, igual em
+            # todos. Nao dava pra saber de que video cada clipe veio, e por isso
+            # dois cortes do MESMO trecho, feitos em dias diferentes, passaram por
+            # inteiros e foram os dois pra fila.
+            meta["fonte_id"] = (os.environ.get("DRIVE_FILE_ID")
+                                or os.environ.get("ARQUIVO_ID") or "")
             (pasta / "post.json").write_text(
                 json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
             (pasta / "post.txt").write_text(_legenda(c), encoding="utf-8")

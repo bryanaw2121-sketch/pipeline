@@ -428,6 +428,35 @@ def main() -> None:
 
     rejeitados_ = rejeitados.chaves()
 
+    # ⚠️ MESMA FONTE + MESMO SEGUNDO = MESMO CLIPE, por mais que titulo,
+    # traducao e hash mudem. Foi assim que a cozinha ficou com tres pares
+    # duplicados em 02/09/2026:
+    #
+    #     "Ramen de Carne com Legumes em Uma So Panela"      inicio 613,1s
+    #     "Lamen de Carne Moida com Legumes em Uma Panela So" inicio 613,1s
+    #
+    # O mesmo bruto foi cortado em dois dias, o Gemini escolheu o MESMO
+    # trecho (era o melhor) e traduziu diferente. Nenhuma guarda pegou: o
+    # hash muda porque o render e' novo, e a dedup por texto compara prefixo —
+    # "ramen" e "lamen" diferem na PRIMEIRA letra.
+    trechos_vistos = set()
+    for _k, _v in todos.items():
+        _f, _i = _v.get("fonte_id"), _v.get("inicio_s")
+        if _f and _i is not None and _v.get("publicado_em"):
+            trechos_vistos.add((_f, round(float(_i), 1)))
+
+    def trecho_ja_usado(v) -> bool:
+        """Este trecho exato ja' virou clipe antes?
+
+        ⚠️ Clipe SEM `fonte_id` nao e' recusado: o manifesto antigo nao tem o
+        campo, e recusar por ausencia de dado travaria tudo que foi cortado
+        antes de 02/09/2026.
+        """
+        f, i = v.get("fonte_id"), v.get("inicio_s")
+        if not f or i is None:
+            return False
+        return (f, round(float(i), 1)) in trechos_vistos
+
     def cabe(v):
         # ⚠️ RECUSA POR CONTEUDO, ANTES DE QUALQUER COMPARACAO DE TEXTO.
         #
@@ -438,6 +467,8 @@ def main() -> None:
         #
         # Clipe antigo nao tem sha no manifesto: ai' esta guarda nao opina e
         # as de texto seguem valendo.
+        if trecho_ja_usado(v):
+            return False
         sha = v.get("sha")
         if sha and registro_clipes.ja_postado(sha):
             return False
