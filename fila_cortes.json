@@ -12,7 +12,7 @@
       "run_id": 33564717678
     },
     {
-      "estado": "disparado",
+      "estado": "pronto",
       "canal": "cozinha.internacional",
       "qtd": "3",
       "drive_file_id": "1Z67fRrnXWgH-A8hk-bIKjn04lPLz0KYS",
@@ -21,18 +21,22 @@
       "run_id": 33564723956
     },
     {
-      "estado": "pendente",
+      "estado": "disparado",
       "canal": "cozinha.internacional",
       "qtd": "3",
       "drive_file_id": "1186xW0uEwguvuxgWt3_GHCAmSlJhmxYB",
-      "nome": "Make Butter in 10 Minutes - Chef Jean-Pierre"
+      "nome": "Make Butter in 10 Minutes - Chef Jean-Pierre",
+      "quando": "2026-09-02T01:07:50+00:00",
+      "run_id": 33578142183
     },
     {
-      "estado": "pendente",
+      "estado": "disparado",
       "canal": "cozinha.internacional",
       "qtd": "3",
       "drive_file_id": "1FLJW0nsSwoB5PklqzvuGw16uybepKLPn",
-      "nome": "How to Make The Best Hot Chocolate Of All Time (4 ways)"
+      "nome": "How to Make The Best Hot Chocolate Of All Time (4 ways)",
+      "quando": "2026-09-02T01:07:55+00:00",
+      "run_id": 33578147788
     }
   ],
   "_fora": {
