@@ -302,6 +302,28 @@ def converter(texto: str) -> tuple[str, list[str]]:
     t = re.sub(r"(\d+\s*°\s*C)\s*(?:degrees?\s*)?(?:fahrenheit|f)\b(?!\w)",
                r"\1", t, flags=re.I)
 
+    # ⚠️ "CELSIUS" POR EXTENSO VIRA °C — pra FALA sair "220 graus", so'.
+    #
+    # Pedido do Bryan em 03/09/2026: "quando for falar 220C falar 220 graus
+    # apenas". O simbolo `°C` ja' virava "graus" na tabela de fala, mas a
+    # PALAVRA "Celsius" nao passava por ali e era dublada como esta' escrita:
+    #
+    #     "220°C or 220 Celsius"  ->  "duzentos e vinte graus or
+    #                                  duzentos e vinte Celsius"
+    #
+    # Em portugues do Brasil ninguem diz "duzentos e vinte Celsius" numa
+    # receita — diz "duzentos e vinte graus". A unidade e' implicita.
+    t = re.sub(r"(\d+)\s*(?:graus\s*)?(?:degrees?\s*)?(?:celsius|centigrade)\b(?!\w)",
+               r"\1°C", t, flags=re.I)
+
+    # ⚠️ E A REPETICAO SOME. Receita americana costuma falar as DUAS unidades
+    # ("425 Fahrenheit or 220 Celsius"), e depois de converter as duas viram o
+    # MESMO valor — a dublagem dizia a temperatura duas vezes seguidas. Só
+    # colapsa quando os numeros sao IGUAIS: valores diferentes podem ser dois
+    # passos da receita ("doure a 220°C e termine a 180°C").
+    t = re.sub(r"(\d+)\s*°\s*C\s*(?:or|ou|/|,)?\s*\1\s*°\s*C\b",
+               r"\1°C", t, flags=re.I)
+
     # "AT 420", numero pelado — sem grau, sem F, sem "degrees". E' como o
     # Will Tennyson fala: "roast for 25 to 30 minutes AT 420". Nem a regra do
     # °F nem a de "degrees" pegam, e o corte saiu dizendo "a 420".

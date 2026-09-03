@@ -70,8 +70,14 @@ def teste_negativo_celsius_NAO_pode_ser_reconvertido():
     """⚠️ O RISCO DO CONSERTO. Se o lookahead de Celsius fosse perdido,
     "220 degrees Celsius" viraria 104°C — trocaria um erro VISIVEL por um
     silencioso, que e' muito pior: ninguem ve' um forno a 104 graus."""
-    assert _c("cook at 220 degrees Celsius") == "cook at 220 degrees Celsius"
-    assert _c("preheat to 180 degrees centigrade") == "preheat to 180 degrees centigrade"
+    # ⚠️ O QUE IMPORTA E' O VALOR, NAO A GRAFIA. Ate' 03/09/2026 este teste
+    # exigia o texto literalmente intacto — e reprovou quando "220 degrees
+    # Celsius" passou a virar "220°C" de proposito, pra fala dizer "220 graus".
+    # Aquilo era detalhe de implementacao; o perigo real e' 220 virar 104.
+    saida = _c("cook at 220 degrees Celsius")
+    assert "220" in saida and "104" not in saida, saida
+    saida = _c("preheat to 180 degrees centigrade")
+    assert "180" in saida and "82" not in saida, saida
 
 
 def teste_negativo_degrees_sem_unidade_CONTINUA_convertendo():
@@ -89,6 +95,36 @@ def teste_negativo_temperatura_baixa_nao_e_forno():
     — a regra original deixa quieto, e isso tem de continuar."""
     saida = _c("let it rest at 70 degrees")
     assert "°C" not in saida, saida
+
+
+# ------------------------------------------------- fala: "220 graus", so'
+
+def _fala(texto):
+    from engine import numeros
+    return numeros.por_extenso(_c(texto))
+
+
+def teste_celsius_por_extenso_vira_graus_na_fala():
+    """Pedido do Bryan em 03/09/2026: "quando for falar 220C falar 220 graus
+    apenas". O simbolo °C ja' virava "graus", mas a PALAVRA "Celsius" nao
+    passava pela tabela de fala e era dublada como estava escrita."""
+    assert "Celsius" not in _fala("leve ao forno a 220 Celsius")
+    assert "duzentos e vinte graus" in _fala("leve ao forno a 220 Celsius")
+    assert "cento e oitenta graus" in _fala("asse a 180 graus Celsius")
+
+
+def teste_a_temperatura_nao_e_dita_DUAS_vezes():
+    """Receita americana fala as duas unidades; depois de converter, viram o
+    mesmo valor e a dublagem repetia."""
+    f = _fala("Bake at 425 degrees Fahrenheit or 220 Celsius.")
+    assert f.count("duzentos e vinte graus") == 1, f
+
+
+def teste_negativo_valores_DIFERENTES_nao_colapsam():
+    """⚠️ TEOREMATICO. Colapsar por proximidade apagaria um passo da receita:
+    "doure a 220°C e termine a 180°C" sao duas temperaturas de verdade."""
+    saida = _c("doure a 425 degrees F e termine a 350 degrees F")
+    assert "220°C" in saida and "180°C" in saida, saida
 
 
 if __name__ == "__main__":
