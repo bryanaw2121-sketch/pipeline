@@ -272,7 +272,35 @@ def converter(texto: str) -> tuple[str, list[str]]:
         c = round(c / 10) * 10 if c >= 100 else round(c)
         achados.append(f"{int(f)} degrees = {int(c)}°C")
         return f"{int(c)}°C"
-    t = re.sub(r"(\d+)\s*degrees?\b(?!\s*c)", graus, t, flags=re.I)
+    # ⚠️ A UNIDADE TEM DE SER ENGOLIDA JUNTO COM O NUMERO.
+    #
+    # MEDIDO em 03/09/2026, num video que FOI AO AR no canal. A legenda dizia:
+    #
+    #     "Em seguida, leve ao forno a 220°C Fahrenheit ou 220 Celsius."
+    #
+    # O original era "bake at 425 degrees Fahrenheit or 220 Celsius": o numero
+    # converteu certo (425F = 220C) e a palavra "Fahrenheit" ficou ORFA, colada
+    # no valor ja' convertido. A frase se contradiz sozinha e ainda repete a
+    # temperatura duas vezes — e o mesmo texto vai pra legenda E pra dublagem.
+    #
+    # A causa era o lookahead `(?!\s*c)`: ele so' evitava casar quando vinha um
+    # "c" depois, e nao dizia nada sobre "Fahrenheit" ou "F" — que sao
+    # justamente o jeito MAIS COMUM de dizer temperatura em receita americana.
+    # O caso raro estava tratado; o comum, nao.
+    #
+    # Agora a unidade entra no casamento e desaparece com o numero.
+    t = re.sub(r"(\d+)\s*degrees?\s*(?:fahrenheit|f)\b(?!\w)", graus, t,
+               flags=re.I)
+    # ⚠️ O `(?!...c)` CONTINUA NECESSARIO aqui: sem ele, "220 degrees Celsius"
+    # seria lido como Fahrenheit e convertido de novo, virando 104°C — trocar
+    # um erro visivel por um silencioso.
+    t = re.sub(r"(\d+)\s*degrees?\b(?!\s*(?:c\b|celsius|centigrade))", graus, t,
+               flags=re.I)
+
+    # ⚠️ E a unidade orfa que JA' esta' no acervo tambem some: os clipes
+    # cortados antes deste conserto tem "220°C Fahrenheit" gravado no texto.
+    t = re.sub(r"(\d+\s*°\s*C)\s*(?:degrees?\s*)?(?:fahrenheit|f)\b(?!\w)",
+               r"\1", t, flags=re.I)
 
     # "AT 420", numero pelado — sem grau, sem F, sem "degrees". E' como o
     # Will Tennyson fala: "roast for 25 to 30 minutes AT 420". Nem a regra do
