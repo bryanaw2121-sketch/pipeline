@@ -1,0 +1,84 @@
+name: Repor fila (diario, 09:00 Sao Paulo)
+
+# Reenfileira no Buffer o clipe que JA' EXISTE na release e ficou de fora.
+#
+# ⚠️ POR QUE ISTO EXISTE — E NAO E' O QUE PARECIA
+#
+# O motivo escrito no handoff de 07/09/2026 era "este repositorio nao tem
+# repor_fila, entao ninguem reabastece a fila do Buffer sozinho". Isso estava
+# ERRADO: o `cortar_do_drive.yml` termina com um passo "Enfileirar no Buffer"
+# que roda `agendar_buffer.py` depois de TODO corte. O elo existe.
+#
+# O buraco de verdade e' outro, e mais estreito: aquele passo e'
+# `continue-on-error: true`. Foi escrito assim de proposito ("o clipe ja'
+# esta' no Drive e na Release, e um erro do Buffer nao reprova o corte") — e
+# a consequencia e' que **falha do Buffer e' invisivel**. O run fica verde, o
+# clipe entra na release, e NINGUEM tenta agendar aquele clipe outra vez.
+# Clipe orfao, para sempre, sem nenhum sinal.
+#
+# MEDIDO em 07/09/2026, com `agendar_buffer.py --simular`:
+#
+#     fila: 0/10 agendados  ->  10 vagas
+#     16 clipe(s) no manifesto, 1 ainda nao agendado
+#     nota 95  "Hamburguer Crocante de Frango com Queijo e Molho Ranch"
+#
+# Um orfao em 16, com o canal em ZERO post agendado. Este workflow e' a
+# RETENTATIVA que faltava — nao o elo que faltava.
+#
+# ⚠️ E POR QUE 15 DOS 16 NAO APARECEM: a deduplicacao do `agendar_buffer`
+# consulta o Buffer por `scheduled` E `sent`. Clipe ja' publicado conta. Os
+# 16 do acervo nao sao estoque parado; sao 15 que ja' foram ao ar mais 1
+# orfao. Quem ler "16 clipes prontos" e concluir "tem material pra dias" vai
+# errar por um fator de 16 — foi o que aconteceu nesta sessao.
+#
+# ⚠️ NAO CORTA VIDEO. So' agenda o que ja' esta' na release. Se nao houver
+# clipe elegivel, ele diz isso e para. Disparar corte novo custa runner e e'
+# decisao do Bryan.
+
+on:
+  schedule:
+    # 12:00 UTC = 09:00 em Sao Paulo (UTC-3). Mesmo horario do repo do
+    # Modo-Futuro, pra que os dois relatos cheguem juntos no Telegram.
+    #
+    # ⚠️ O cron do Actions e' best-effort: MEDIDO em 01/09/2026 neste mesmo
+    # repositorio, um `*/30` disparou de fato as 00:41, 06:00 e 10:54. Uma
+    # vez por dia com atraso de horas continua fechando o buraco do orfao,
+    # que e' um problema de dias, nao de minutos.
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  repor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Enfileirar o que ficou de fora
+        env:
+          # GH_PAT e nao o GITHUB_TOKEN do runner: o manifesto vive no repo
+          # media-assets, e o token automatico so' le' ESTE repositorio.
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_REPO: ${{ github.repository_owner }}/media-assets
+          BUFFER_TOKEN: ${{ secrets.BUFFER_TOKEN }}
+          # ⚠️ A guarda confere o DESTINO REAL: aborta se o token abrir um
+          # canal diferente deste. Pega secret trocado, renomeado ou canal
+          # reconectado noutra conta. Publicar no canal errado nao tem
+          # desfazer bonito — em 07/09 oito clipes de IA sairam no canal de
+          # comportamento por causa de um rotulo errado na origem.
+          CANAL_ESPERADO: cozinha.importada
+        run: python -X utf8 agendar_buffer.py | tee relato_fila.txt
+
+      - name: Avisar no Telegram
+        if: always()
+        run: |
+          if [ -f relato_fila.txt ]; then T="$(cat relato_fila.txt)"
+          elif [ "${{ job.status }}" = "success" ]; then T="Fila da cozinha conferida — nada a repor."
+          else T="Reposicao da fila da cozinha FALHOU: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; fi
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data-urlencode text="$T"
