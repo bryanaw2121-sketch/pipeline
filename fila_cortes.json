@@ -44,17 +44,18 @@
       "estado": "disparado",
       "nome": "French Onion Soup - Basics with Babish.mp4",
       "qtd": "3",
-      "quando": "2026-09-07T07:10:28+00:00",
+      "quando": "2026-09-07T09:41:48+00:00",
       "tentativas": 1,
-      "run_id": 34094172795
+      "run_id": 34107472576
     },
     {
       "canal": "cozinha.internacional",
       "drive_file_id": "1lYDG45JLuFZ0sSZCnM2vQjp6-Y2Dkait",
-      "estado": "pendente",
+      "estado": "disparado",
       "nome": "Easy TIRAMISU Cake - No-Bake Dessert.mp4",
       "qtd": "3",
-      "quando": "2026-09-07T07:10:33+00:00"
+      "quando": "2026-09-07T09:41:53+00:00",
+      "run_id": 34107479531
     }
   ],
   "_fora": {
