@@ -41,12 +41,11 @@
     {
       "canal": "cozinha.internacional",
       "drive_file_id": "1SSzoKc0dbd3q5IDYdgTEvrfw4Hji6YiV",
-      "estado": "disparado",
+      "estado": "pendente",
       "nome": "French Onion Soup - Basics with Babish.mp4",
       "qtd": "3",
       "quando": "2026-09-07T06:07:09+00:00",
-      "tentativas": 1,
-      "run_id": 34089425676
+      "tentativas": 1
     },
     {
       "canal": "cozinha.internacional",
