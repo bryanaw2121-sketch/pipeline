@@ -37,6 +37,20 @@
       "nome": "How to Make The Best Hot Chocolate Of All Time (4 ways)",
       "quando": "2026-09-02T01:07:55+00:00",
       "run_id": 33578147788
+    },
+    {
+      "canal": "cozinha.internacional",
+      "drive_file_id": "1SSzoKc0dbd3q5IDYdgTEvrfw4Hji6YiV",
+      "estado": "pendente",
+      "nome": "French Onion Soup - Basics with Babish.mp4",
+      "qtd": "3"
+    },
+    {
+      "canal": "cozinha.internacional",
+      "drive_file_id": "1lYDG45JLuFZ0sSZCnM2vQjp6-Y2Dkait",
+      "estado": "pendente",
+      "nome": "Easy TIRAMISU Cake - No-Bake Dessert.mp4",
+      "qtd": "3"
     }
   ],
   "_fora": {
