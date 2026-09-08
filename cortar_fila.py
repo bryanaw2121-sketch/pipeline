@@ -419,6 +419,27 @@ def main() -> None:
     d = json.loads(FILA.read_text(encoding="utf-8"))
     teto = int(os.environ.get("TETO") or d.get("teto_em_voo") or 2)
 
+    # ⚠️ TETO COM PRAZO DE VALIDADE. Ordem do Bryan em 08/09/2026: 1 corte por
+    # vez nas proximas 48h, porque ele precisa da cota do Gemini.
+    #
+    # O prazo mora no arquivo porque EU NAO RODO ENTRE OS TURNOS DELE. Teto
+    # reduzido que so' volta quando alguem lembra de mexer nao volta: fica 1
+    # por semanas, e o gargalo vira invisivel porque "sempre foi assim".
+    volta = d.get("teto_volta_em")
+    if volta:
+        from datetime import datetime, timezone
+        try:
+            quando = datetime.fromisoformat(volta.replace("Z", "+00:00"))
+            if datetime.now(timezone.utc) >= quando:
+                teto = int(d.get("teto_normal") or teto)
+                print(f"teto reduzido VENCEU em {volta} — voltando a {teto}")
+            else:
+                falta = (quando - datetime.now(timezone.utc)).total_seconds() / 3600
+                print(f"teto reduzido a {teto} por ordem do Bryan; "
+                      f"volta a {d.get('teto_normal')} em {falta:.0f}h")
+        except ValueError:
+            print(f"[!] teto_volta_em ilegivel ({volta!r}); mantendo teto {teto}")
+
     # ⚠️ ANTES DE QUALQUER COISA: recolher os que falharam. Se isto rodasse
     # depois do disparo, um item que falhou continuaria fora da conta e a
     # fila andaria pra frente sem ele.

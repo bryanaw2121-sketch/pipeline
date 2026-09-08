@@ -169,8 +169,37 @@ jobs:
       # Sobe os cortes prontos pro Drive pro Bryan ver. O token e OAuth de
       # conta real: a conta de servico NAO tem cota de armazenamento e
       # recusa upload (storageQuotaExceeded, medido em 28/08).
+      #
+      # ⚠️ `continue-on-error` ACRESCENTADO EM 08/09/2026, E E' O REPARO QUE
+      # TIROU O @cozinha.internacional DE SEIS DIAS EM ZERO POST.
+      #
+      # MEDIDO: este passo falhava em TODO run, sempre com o mesmo erro —
+      #   ResumableUploadError: HttpError 404 "File not found: <DRIVE_PASTA_CORTES>"
+      # A pasta de destino do secret nao existe mais. O CORTE EM SI
+      # FUNCIONAVA: o clipe era produzido e ficava no artefato.
+      #
+      # Sem `continue-on-error`, o job era reprovado AQUI — e os dois passos
+      # seguintes, "Publicar clipes numa Release" e "Enfileirar no Buffer",
+      # que sao os que poem o clipe no ar, eram PULADOS (nenhum dos dois tem
+      # `if: always()`). Seis dias de cortes bem-sucedidos que nunca viraram
+      # post, com o run avisando "falhou" sem dizer que a falha era do
+      # penultimo degrau.
+      #
+      # ⚠️ A REGRA QUE ESTE PASSO ESTAVA QUEBRANDO ja' estava escrita duas
+      # linhas abaixo, no passo da Release: "conveniencia... o run nao pode
+      # ser reprovado por isso". Este e' conveniencia pela propria descricao
+      # ("pro Bryan ver"). Conveniencia nao derruba produto.
+      #
+      # ⚠️ E ELE CONTINUA FALHANDO, de proposito. O 404 NAO foi consertado:
+      # a pasta segue faltando e o clipe segue sem copia no Drive. Consertar
+      # exigiria apontar o secret DRIVE_PASTA_CORTES pra uma pasta que exista,
+      # e secret so' o Bryan mexe — mas ele disse em 08/09 que nao quer ver os
+      # cortes por ora, entao isto pode ficar quebrado sem custo nenhum. Se um
+      # dia ele quiser a copia de volta, o conserto e' o secret, nao este
+      # arquivo.
       - name: Subir os cortes pro Drive
         if: always()
+        continue-on-error: true
         env:
           DRIVE_TOKEN_JSON: ${{ secrets.DRIVE_TOKEN_JSON }}
           DRIVE_PASTA: ${{ secrets.DRIVE_PASTA_CORTES }}
