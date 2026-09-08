@@ -51,11 +51,12 @@
     {
       "canal": "cozinha.internacional",
       "drive_file_id": "1lYDG45JLuFZ0sSZCnM2vQjp6-Y2Dkait",
-      "estado": "pendente",
+      "estado": "disparado",
       "nome": "Easy TIRAMISU Cake - No-Bake Dessert.mp4",
       "qtd": "3",
-      "quando": "2026-09-08T04:41:08+00:00",
-      "tentativas": 1
+      "quando": "2026-09-08T06:11:06+00:00",
+      "tentativas": 1,
+      "run_id": 34193571330
     }
   ],
   "_fora": {
