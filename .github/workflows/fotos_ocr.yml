@@ -1,0 +1,58 @@
+name: Fotos — OCR e fidelidade (para o site do Achadinho)
+
+# ⭐ POR QUE ISTO MORA AQUI, e nao no Modo-Futuro (18/09/2026, ordem do Bryan):
+# "nao deve ser instalado na maquina; instale o OCR em nuvem, no GitHub; temos
+# 2 contas, uma esta' destilando conhecimento do YouTube e a outra parada —
+# usar a maquina do GitHub de 16 GB". Esta conta e' a parada; o repo e'
+# PUBLICO, entao o minuto nao conta.
+#
+# ⚠️ SEM SEGREDO NENHUM. A lista de fotos vem como INPUT do dispatch (o
+# publicador do outro motor monta e dispara com o `gh`); o resultado volta
+# como ARTIFACT, que o publicador baixa. Nada aqui le' o repositorio privado
+# do outro motor, e nenhum token cruza a fronteira entre as duas contas.
+#
+# O QUE MEDE, por foto: `texto` = fracao da area coberta por letras (EasyOCR),
+# `palavras` = quantas, `fid` = cosseno CLIP contra a foto PRINCIPAL do mesmo
+# anuncio. E' o par que faltou na primeira tentativa (embedding de "foto
+# limpa" trocou um teclado pela placa de montagem e uma bolsa marrom pela
+# preta): o site so' troca a principal por uma extra que seja O MESMO produto
+# (fid alto) COM MENOS texto.
+
+on:
+  workflow_dispatch:
+    inputs:
+      prefixo:
+        description: "prefixo comum das URLs (ex.: https://ae-pic-a1.aliexpress-media.com/kf/)"
+        required: true
+        type: string
+      lista:
+        description: "JSON {id: [sufixos]} — o PRIMEIRO de cada lista e' a foto principal"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  ocr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dependencias (CPU)
+        run: |
+          pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch torchvision
+          pip install --quiet easyocr open_clip_torch pillow requests numpy
+      - name: Medir
+        env:
+          PREFIXO: ${{ inputs.prefixo }}
+          LISTA: ${{ inputs.lista }}
+        run: python -X utf8 fotos_ocr.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fotos_ocr
+          path: fotos_ocr.json
+          retention-days: 7
